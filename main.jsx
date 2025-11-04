@@ -2,6 +2,10 @@ import React, { useState, useMemo, useCallback } from 'react';
 import ReactDOM from 'react-dom/client';
 import { ComposedChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Area } from 'recharts';
 
+// ========== BEGIN CLAUDE CODE ==========
+// Paste Claude's artifact code between these markers
+// Replace everything from "const DawnDeltaTool" to "export default DawnDeltaTool;"
+
 const DawnDeltaTool = () => {
   const [latitude, setLatitude] = useState(40);
   const [wakeTime, setWakeTime] = useState(2);
@@ -513,6 +517,8 @@ const DawnDeltaTool = () => {
 };
 
 export default DawnDeltaTool;
+
+// ========== END CLAUDE CODE ==========
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(<DawnDeltaTool />);
