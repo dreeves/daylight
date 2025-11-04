@@ -179,11 +179,23 @@ more generally it comes up with this:
 
 does that work for you? can you find the average DST start/end dates for various locales?
 
-_[oops, ran out of credits]_
+_[version 21]_
+
+oops, did you finish? i don't see the new sliders
+
+_[version 22]_
+
+ah, bad design choice [having the sliders only appear when the DST box is checked]. also makes the whole page jump when you check the box. can you just gray out the sliders when DST is unchecked?
+
+_[version 23]_
+
+also can you make sure the locale appears (dynamically) after the DST start date when the start date matches the date for that locale? and same for DST end date. note that they're orthogonal -- totally possible to have DST start chosen so it displays "Europe" and DST end chosen so it displays "USA".
+
+_[version 24]_
+
+
 
 TODO: 
-
-sliders all sluggish
 
 allow latitude all the way to the poles, just to see what that does to the graph
 
@@ -193,3 +205,13 @@ revert if it makes it worse but:
 if wake time is at zero and you check the DST checkbox, it should wrap to the top of the graph rather than increase the y-axis range to start at -1 instead +0. basically everything should be graphed mod 24.
 
 to be less northern-hemisphere-centric, the baseline of summer solstice dawn should adapt to negative latitudes. in that case summer solstice is what northerners call winter solstice.
+
+shading bug when wake time is between +12 and around +15 for 45 degrees latitude: it doesn't shade the full width of the graph.
+
+for each displayed city, can we show a sunrise emoji after it and then the time of day like "6:42am" for the time of day _without DST_ of dawn on summer solstice for that city?
+then a tooltip can say "local time of dawn on the summer solstice in this city _without DST_, used as the baseline (+0:00) on the graph"
+actually, let's have that change dynamically to be with/without depending on if the DST checkbox is checked. that's part of the scenario exploring the tool provides: what time would dawn be with and without DST?
+
+for codebuff probably:
+can we deal with this warning, if it matters?
+cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation

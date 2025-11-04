@@ -1,16 +1,63 @@
-import React, { useState, useMemo, useCallback } from 'react';
 import ReactDOM from 'react-dom/client';
-import { ComposedChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Area } from 'recharts';
 
 // ========== BEGIN CLAUDE CODE ==========
 // Paste Claude's artifact code between these markers
-// Replace everything from "const DawnDeltaTool" to "export default DawnDeltaTool;"
+
+import React, { useState, useMemo, useCallback } from 'react';
+import { ComposedChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Area } from 'recharts';
+
 
 const DawnDeltaTool = () => {
   const [latitude, setLatitude] = useState(40);
   const [wakeTime, setWakeTime] = useState(2);
   const [bedtime, setBedtime] = useState(18);
   const [dstEnabled, setDstEnabled] = useState(false);
+  // European defaults: last Sunday in March (day 87) to last Sunday in October (day 301)
+  const [dstStart, setDstStart] = useState(87);
+  const [dstEnd, setDstEnd] = useState(301);
+
+  // DST date rules for various locales
+  // Using formula: kth whateverday = 7k-3, last whateverday = L-3
+  // Source: Computed averages over 400-year Gregorian cycle
+  const dstLocales = useMemo(() => [
+    { name: 'Europe', start: 87, end: 301 }, // Last Sun Mar (28) to Last Sun Oct (28)
+    { name: 'USA/Canada', start: 70, end: 308 }, // 2nd Sun Mar (11) to 1st Sun Nov (4)
+    { name: 'Australia', start: 277, end: 94 }, // 1st Sun Oct (4) to 1st Sun Apr (4)
+    { name: 'New Zealand', start: 270, end: 94 }, // Last Sun Sep (27) to 1st Sun Apr (4)
+    { name: 'Paraguay', start: 277, end: 84 }, // 1st Sun Oct (4) to 4th Sun Mar (25)
+    { name: 'Cuba', start: 70, end: 308 }, // 2nd Sun Mar (11) to 1st Sun Nov (4)
+  ], []);
+
+  // Get locale names for start date
+  const getLocalesForStartDate = useCallback((start) => {
+    return dstLocales
+      .filter(loc => Math.abs(loc.start - start) <= 1)
+      .map(loc => loc.name);
+  }, [dstLocales]);
+
+  // Get locale names for end date
+  const getLocalesForEndDate = useCallback((end) => {
+    return dstLocales
+      .filter(loc => Math.abs(loc.end - end) <= 1)
+      .map(loc => loc.name);
+  }, [dstLocales]);
+
+  const startLocales = useMemo(() => 
+    getLocalesForStartDate(dstStart), 
+    [dstStart, getLocalesForStartDate]
+  );
+
+  const endLocales = useMemo(() => 
+    getLocalesForEndDate(dstEnd), 
+    [dstEnd, getLocalesForEndDate]
+  );
+
+  // Convert day of year to month/day string
+  const dayOfYearToDate = useCallback((day) => {
+    const date = new Date(2024, 0, day); // 2024 is a leap year
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return `${months[date.getMonth()]} ${date.getDate()}`;
+  }, []);
 
   // Get city names for exact integer latitude
   // Data sources: Wikipedia city coordinates, rounded to nearest degree
@@ -18,43 +65,43 @@ const DawnDeltaTool = () => {
   const getCitiesForLatitude = useCallback((lat) => {
     const cityData = {
       64: [{ name: 'Reykjavik', pop: 233034 }],
-      60: [{ name: 'Helsinki', pop: 1.5e6 }, { name: 'Oslo', pop: 1.04e6 }, { name: 'Saint Petersburg', pop: 5.6e6 }],
+      60: [{ name: 'Saint Petersburg', pop: 5.6e6 }, { name: 'Helsinki', pop: 1.5e6 }, { name: 'Oslo', pop: 1.04e6 }],
       59: [{ name: 'Stockholm', pop: 2.4e6 }],
       56: [{ name: 'Moscow', pop: 21.5e6 }, { name: 'Copenhagen', pop: 2.1e6 }],
       55: [{ name: 'Edinburgh', pop: 900000 }],
       54: [{ name: 'Hamburg', pop: 5.1e6 }],
       53: [{ name: 'Dublin', pop: 1.4e6 }],
-      52: [{ name: 'Amsterdam', pop: 2.4e6 }, { name: 'Berlin', pop: 6.1e6 }, { name: 'Warsaw', pop: 3.1e6 }],
+      52: [{ name: 'Berlin', pop: 6.1e6 }, { name: 'Warsaw', pop: 3.1e6 }, { name: 'Amsterdam', pop: 2.4e6 }],
       51: [{ name: 'London', pop: 14.3e6 }, { name: 'Calgary', pop: 1.6e6 }],
-      50: [{ name: 'Prague', pop: 2.7e6 }, { name: 'Frankfurt', pop: 5.9e6 }, { name: 'Vancouver', pop: 2.6e6 }],
+      50: [{ name: 'Frankfurt', pop: 5.9e6 }, { name: 'Prague', pop: 2.7e6 }, { name: 'Vancouver', pop: 2.6e6 }],
       49: [{ name: 'Paris', pop: 11.2e6 }, { name: 'Munich', pop: 6.1e6 }],
-      48: [{ name: 'Vienna', pop: 2.9e6 }, { name: 'Seattle', pop: 4.0e6 }],
-      46: [{ name: 'Portland', pop: 2.5e6 }, { name: 'Montreal', pop: 4.3e6 }],
+      48: [{ name: 'Seattle', pop: 4.0e6 }, { name: 'Vienna', pop: 2.9e6 }],
+      46: [{ name: 'Montreal', pop: 4.3e6 }, { name: 'Portland', pop: 2.5e6 }],
       45: [{ name: 'Milan', pop: 7.6e6 }, { name: 'Minneapolis', pop: 3.7e6 }],
       44: [{ name: 'Toronto', pop: 6.4e6 }],
-      43: [{ name: 'Marseille', pop: 1.9e6 }, { name: 'Boston', pop: 4.9e6 }],
+      43: [{ name: 'Boston', pop: 4.9e6 }, { name: 'Marseille', pop: 1.9e6 }],
       42: [{ name: 'Chicago', pop: 9.6e6 }, { name: 'Rome', pop: 4.3e6 }],
-      41: [{ name: 'Madrid', pop: 6.7e6 }, { name: 'Istanbul', pop: 15.8e6 }, { name: 'New York', pop: 19.5e6 }],
+      41: [{ name: 'New York', pop: 19.5e6 }, { name: 'Istanbul', pop: 15.8e6 }, { name: 'Madrid', pop: 6.7e6 }],
       40: [{ name: 'Beijing', pop: 21.5e6 }, { name: 'Philadelphia', pop: 6.2e6 }],
       39: [{ name: 'Washington DC', pop: 6.4e6 }, { name: 'Ankara', pop: 5.7e6 }],
-      38: [{ name: 'San Francisco', pop: 4.7e6 }, { name: 'Athens', pop: 3.1e6 }, { name: 'Seoul', pop: 25.5e6 }],
+      38: [{ name: 'Seoul', pop: 25.5e6 }, { name: 'San Francisco', pop: 4.7e6 }, { name: 'Athens', pop: 3.1e6 }],
       37: [{ name: 'Los Angeles', pop: 12.5e6 }],
       36: [{ name: 'Tokyo', pop: 37.3e6 }],
       35: [{ name: 'Tokyo', pop: 37.3e6 }, { name: 'Las Vegas', pop: 2.3e6 }],
       34: [{ name: 'Phoenix', pop: 4.9e6 }],
-      33: [{ name: 'Dallas', pop: 7.6e6 }, { name: 'Shanghai', pop: 29.2e6 }, { name: 'Baghdad', pop: 7.2e6 }],
+      33: [{ name: 'Shanghai', pop: 29.2e6 }, { name: 'Dallas', pop: 7.6e6 }, { name: 'Baghdad', pop: 7.2e6 }],
       32: [{ name: 'San Diego', pop: 3.3e6 }],
-      31: [{ name: 'Cairo', pop: 21.3e6 }, { name: 'Shanghai', pop: 29.2e6 }],
+      31: [{ name: 'Shanghai', pop: 29.2e6 }, { name: 'Cairo', pop: 21.3e6 }],
       30: [{ name: 'Houston', pop: 7.1e6 }, { name: 'New Orleans', pop: 1.3e6 }],
       29: [{ name: 'Delhi', pop: 32.9e6 }],
       28: [{ name: 'Miami', pop: 6.1e6 }],
       26: [{ name: 'Riyadh', pop: 7.7e6 }],
       25: [{ name: 'Taipei', pop: 7.0e6 }],
       23: [{ name: 'Kolkata', pop: 15.1e6 }, { name: 'Havana', pop: 2.1e6 }],
-      22: [{ name: 'Mumbai', pop: 21.3e6 }, { name: 'Dhaka', pop: 22.5e6 }],
+      22: [{ name: 'Dhaka', pop: 22.5e6 }, { name: 'Mumbai', pop: 21.3e6 }],
       19: [{ name: 'Mexico City', pop: 22.0e6 }, { name: 'Manila', pop: 14.7e6 }],
       14: [{ name: 'Bangkok', pop: 17.1e6 }, { name: 'Manila', pop: 14.7e6 }],
-      13: [{ name: 'Lagos', pop: 15.4e6 }, { name: 'Bangkok', pop: 17.1e6 }],
+      13: [{ name: 'Bangkok', pop: 17.1e6 }, { name: 'Lagos', pop: 15.4e6 }],
       9: [{ name: 'Singapore', pop: 5.9e6 }],
       7: [{ name: 'Bogotá', pop: 11.5e6 }],
       5: [{ name: 'Bogotá', pop: 11.5e6 }],
@@ -82,7 +129,6 @@ const DawnDeltaTool = () => {
     
     if (!cities) return [];
     
-    // Sort by population descending and take top 3
     return cities
       .sort((a, b) => b.pop - a.pop)
       .slice(0, 3)
@@ -91,21 +137,19 @@ const DawnDeltaTool = () => {
 
   const cityNames = useMemo(() => getCitiesForLatitude(latitude), [latitude, getCitiesForLatitude]);
 
-  // Calculate sleep hours
   const sleepHours = useMemo(() => {
     return 24 - (bedtime - wakeTime);
   }, [wakeTime, bedtime]);
 
-  // Calculate if DST is active for a given day (European dates)
   const isDSTActive = useCallback((dayOfYear, isLeapYear) => {
-    if (isLeapYear) {
-      return dayOfYear >= 91 && dayOfYear < 301;
+    // Handle wrapping (e.g., Australia where DST spans year boundary)
+    if (dstStart < dstEnd) {
+      return dayOfYear >= dstStart && dayOfYear < dstEnd;
     } else {
-      return dayOfYear >= 91 && dayOfYear < 301;
+      return dayOfYear >= dstStart || dayOfYear < dstEnd;
     }
-  }, []);
+  }, [dstStart, dstEnd]);
 
-  // Calculate sunrise time for a given day and latitude
   const calculateSunrise = useCallback((dayOfYear, lat, totalDays) => {
     const latRad = (lat * Math.PI) / 180;
     const declination = -23.45 * Math.cos((2 * Math.PI / totalDays) * (dayOfYear + 10));
@@ -119,7 +163,6 @@ const DawnDeltaTool = () => {
     return 12 - (hourAngle * 12) / Math.PI;
   }, []);
 
-  // Calculate sunset time for a given day and latitude
   const calculateSunset = useCallback((dayOfYear, lat, totalDays) => {
     const latRad = (lat * Math.PI) / 180;
     const declination = -23.45 * Math.cos((2 * Math.PI / totalDays) * (dayOfYear + 10));
@@ -133,7 +176,6 @@ const DawnDeltaTool = () => {
     return 12 + (hourAngle * 12) / Math.PI;
   }, []);
 
-  // Calculate data for one year (either leap or non-leap)
   const calculateYearData = useCallback((isLeapYear, useDST) => {
     const totalDays = isLeapYear ? 366 : 365;
     const summerSolsticeDay = isLeapYear ? 173 : 172;
@@ -153,10 +195,9 @@ const DawnDeltaTool = () => {
         ? sunset - summerSolsticeSunrise
         : 0;
       
-      // Calculate wake time with DST adjustment if enabled
-      const isDST = isDSTActive(day, isLeapYear);
-      const adjustedWakeTime = (useDST && isDST) ? wakeTime - 1 : wakeTime;
-      const adjustedBedtime = (useDST && isDST) ? bedtime - 1 : bedtime;
+      const isDST = useDST && isDSTActive(day, isLeapYear);
+      const adjustedWakeTime = isDST ? wakeTime - 1 : wakeTime;
+      const adjustedBedtime = isDST ? bedtime - 1 : bedtime;
       
       result.push({ 
         day,
@@ -170,10 +211,8 @@ const DawnDeltaTool = () => {
     return result;
   }, [latitude, wakeTime, bedtime, calculateSunrise, calculateSunset, isDSTActive]);
 
-  // Calculate weighted average data for display (accounting for leap years)
   const data = useMemo(() => {
     const nonLeapData = calculateYearData(false, dstEnabled);
-    
     const result = [];
     
     for (let day = 1; day <= 365; day++) {
@@ -183,7 +222,6 @@ const DawnDeltaTool = () => {
       const date = new Date(2024, 0, day);
       const monthDay = `${date.getMonth() + 1}/${date.getDate()}`;
       
-      // Calculate regions for coloring
       const daylightAwakeStart = Math.max(dawnDelta, adjustedWakeTime);
       const daylightAwakeEnd = Math.min(duskDelta, sleepTime);
       const daylightAwake = daylightAwakeStart < daylightAwakeEnd ? [daylightAwakeStart, daylightAwakeEnd] : null;
@@ -222,7 +260,6 @@ const DawnDeltaTool = () => {
     return result;
   }, [calculateYearData, dstEnabled]);
 
-  // Calculate wasted daylight for a given DST setting
   const calculateWastedDaylight = useCallback((useDST) => {
     const nonLeapData = calculateYearData(false, useDST);
     const leapData = calculateYearData(true, useDST);
@@ -246,12 +283,10 @@ const DawnDeltaTool = () => {
     return nonLeapWaste * 0.75 + leapWaste * 0.25;
   }, [calculateYearData]);
 
-  // Calculate total wasted daylight hours (weighted average for leap years)
   const wastedDaylight = useMemo(() => {
     return calculateWastedDaylight(dstEnabled);
   }, [calculateWastedDaylight, dstEnabled]);
 
-  // Calculate DST savings
   const dstSavings = useMemo(() => {
     const wasteWithoutDST = calculateWastedDaylight(false);
     const wasteWithDST = calculateWastedDaylight(true);
@@ -318,7 +353,7 @@ const DawnDeltaTool = () => {
 
   return (
     <div className="w-full max-w-6xl mx-auto p-6 bg-gradient-to-br from-blue-50 to-orange-50 rounded-lg shadow-lg">
-      <h1 className="text-3xl font-bold mb-6 text-gray-800 text-center">Daylight Scenarios</h1>
+      <h1 className="text-3xl font-bold mb-6 text-gray-800 text-center">Daylight Savings</h1>
       
       <div className="bg-white p-6 rounded-lg shadow mb-6">
         <div className="mb-4">
@@ -389,6 +424,38 @@ const DawnDeltaTool = () => {
           </label>
         </div>
 
+        <div className="mb-4">
+          <label className={`block text-lg font-semibold mb-2 ${dstEnabled ? 'text-gray-700' : 'text-gray-400'}`}>
+            DST start: {dayOfYearToDate(dstStart)}{startLocales.length > 0 ? ` (${startLocales.join(', ')})` : ''}
+          </label>
+          <input
+            type="range"
+            min="1"
+            max="365"
+            step="7"
+            value={dstStart}
+            onChange={(e) => setDstStart(Number(e.target.value))}
+            disabled={!dstEnabled}
+            className={`w-full h-2 rounded-lg appearance-none cursor-pointer ${dstEnabled ? 'bg-yellow-200' : 'bg-gray-200 opacity-50 cursor-not-allowed'}`}
+          />
+        </div>
+
+        <div className="mb-4">
+          <label className={`block text-lg font-semibold mb-2 ${dstEnabled ? 'text-gray-700' : 'text-gray-400'}`}>
+            DST end: {dayOfYearToDate(dstEnd)}{endLocales.length > 0 ? ` (${endLocales.join(', ')})` : ''}
+          </label>
+          <input
+            type="range"
+            min="1"
+            max="365"
+            step="7"
+            value={dstEnd}
+            onChange={(e) => setDstEnd(Number(e.target.value))}
+            disabled={!dstEnabled}
+            className={`w-full h-2 rounded-lg appearance-none cursor-pointer ${dstEnabled ? 'bg-orange-200' : 'bg-gray-200 opacity-50 cursor-not-allowed'}`}
+          />
+        </div>
+
         <div className="bg-blue-50 p-4 rounded-lg">
           <p className="text-lg font-semibold text-gray-700">
             Wasted daylight: {Math.round(wastedDaylight)} hours/year <span className="text-sm font-normal text-gray-600">({formatHoursPerDay(wastedDaylight / 365.25)})</span>
@@ -415,100 +482,18 @@ const DawnDeltaTool = () => {
             <Tooltip content={CustomTooltip} />
             <ReferenceLine y={0} stroke="#666" strokeDasharray="3 3" />
             
-            <Area
-              type="monotone"
-              dataKey="darkAsleepMorning"
-              stroke="none"
-              fill="#7c3aed"
-              fillOpacity={0.5}
-              isAnimationActive={false}
-            />
-            <Area
-              type="monotone"
-              dataKey="darkAsleepEvening"
-              stroke="none"
-              fill="#7c3aed"
-              fillOpacity={0.5}
-              isAnimationActive={false}
-            />
+            <Area type="monotone" dataKey="darkAsleepMorning" stroke="none" fill="#7c3aed" fillOpacity={0.5} isAnimationActive={false} />
+            <Area type="monotone" dataKey="darkAsleepEvening" stroke="none" fill="#7c3aed" fillOpacity={0.5} isAnimationActive={false} />
+            <Area type="monotone" dataKey="nightAwakeMorning" stroke="none" fill="#c4b5fd" fillOpacity={0.5} isAnimationActive={false} />
+            <Area type="monotone" dataKey="nightAwakeEvening" stroke="none" fill="#c4b5fd" fillOpacity={0.5} isAnimationActive={false} />
+            <Area type="monotone" dataKey="daylightAwake" stroke="none" fill="#fbbf24" fillOpacity={0.5} isAnimationActive={false} />
+            <Area type="monotone" dataKey="morningWaste" stroke="none" fill="#ef4444" fillOpacity={0.5} isAnimationActive={false} />
+            <Area type="monotone" dataKey="eveningWaste" stroke="none" fill="#ef4444" fillOpacity={0.5} isAnimationActive={false} />
             
-            <Area
-              type="monotone"
-              dataKey="nightAwakeMorning"
-              stroke="none"
-              fill="#c4b5fd"
-              fillOpacity={0.5}
-              isAnimationActive={false}
-            />
-            <Area
-              type="monotone"
-              dataKey="nightAwakeEvening"
-              stroke="none"
-              fill="#c4b5fd"
-              fillOpacity={0.5}
-              isAnimationActive={false}
-            />
-            
-            <Area
-              type="monotone"
-              dataKey="daylightAwake"
-              stroke="none"
-              fill="#fbbf24"
-              fillOpacity={0.5}
-              isAnimationActive={false}
-            />
-            
-            <Area
-              type="monotone"
-              dataKey="morningWaste"
-              stroke="none"
-              fill="#ef4444"
-              fillOpacity={0.5}
-              isAnimationActive={false}
-            />
-            <Area
-              type="monotone"
-              dataKey="eveningWaste"
-              stroke="none"
-              fill="#ef4444"
-              fillOpacity={0.5}
-              isAnimationActive={false}
-            />
-            
-            <Line 
-              type="monotone" 
-              dataKey="dawnDelta" 
-              stroke="#f59e0b" 
-              strokeWidth={2}
-              dot={false}
-              isAnimationActive={false}
-            />
-            <Line 
-              type="monotone" 
-              dataKey="duskDelta" 
-              stroke="#dc2626" 
-              strokeWidth={2}
-              dot={false}
-              isAnimationActive={false}
-            />
-            <Line 
-              type="monotone" 
-              dataKey="wakeTime" 
-              stroke="#16a34a" 
-              strokeWidth={2}
-              dot={false}
-              isAnimationActive={false}
-              strokeDasharray="5 5"
-            />
-            <Line 
-              type="monotone" 
-              dataKey="sleepTime" 
-              stroke="#7c3aed" 
-              strokeWidth={2}
-              dot={false}
-              isAnimationActive={false}
-              strokeDasharray="5 5"
-            />
+            <Line type="monotone" dataKey="dawnDelta" stroke="#f59e0b" strokeWidth={2} dot={false} isAnimationActive={false} />
+            <Line type="monotone" dataKey="duskDelta" stroke="#dc2626" strokeWidth={2} dot={false} isAnimationActive={false} />
+            <Line type="monotone" dataKey="wakeTime" stroke="#16a34a" strokeWidth={2} dot={false} isAnimationActive={false} strokeDasharray="5 5" />
+            <Line type="monotone" dataKey="sleepTime" stroke="#7c3aed" strokeWidth={2} dot={false} isAnimationActive={false} strokeDasharray="5 5" />
           </ComposedChart>
         </ResponsiveContainer>
       </div>
