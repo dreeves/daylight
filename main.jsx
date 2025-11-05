@@ -6,7 +6,6 @@ import ReactDOM from 'react-dom/client';
 import React, { useState, useMemo, useCallback } from 'react';
 import { ComposedChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Area } from 'recharts';
 
-
 const DawnDeltaTool = () => {
   const [latitude, setLatitude] = useState(40);
   const [wakeTime, setWakeTime] = useState(2);
@@ -178,7 +177,11 @@ const DawnDeltaTool = () => {
 
   const calculateYearData = useCallback((isLeapYear, useDST) => {
     const totalDays = isLeapYear ? 366 : 365;
-    const summerSolsticeDay = isLeapYear ? 173 : 172;
+    // For Northern Hemisphere: summer solstice in June (day 172/173)
+    // For Southern Hemisphere: summer solstice in December (day 355/356)
+    const summerSolsticeDay = latitude >= 0 
+      ? (isLeapYear ? 173 : 172)  // June 21
+      : (isLeapYear ? 356 : 355); // December 21
     const summerSolsticeSunrise = calculateSunrise(summerSolsticeDay, latitude, totalDays);
     
     const result = [];
@@ -189,11 +192,11 @@ const DawnDeltaTool = () => {
       
       const dawnDelta = (sunrise !== null && summerSolsticeSunrise !== null) 
         ? sunrise - summerSolsticeSunrise 
-        : 0;
+        : null;
       
       const duskDelta = (sunset !== null && summerSolsticeSunrise !== null)
         ? sunset - summerSolsticeSunrise
-        : 0;
+        : null;
       
       const isDST = useDST && isDSTActive(day, isLeapYear);
       const adjustedWakeTime = isDST ? wakeTime - 1 : wakeTime;
@@ -316,9 +319,10 @@ const DawnDeltaTool = () => {
 
   const formatHoursPerDay = useCallback((hours) => {
     const totalMinutes = Math.round(hours * 60);
-    const h = Math.floor(totalMinutes / 60);
-    const m = totalMinutes % 60;
-    return `${h}h\u2009${m}m per day`;
+    const h = Math.floor(Math.abs(totalMinutes) / 60);
+    const m = Math.abs(totalMinutes) % 60;
+    const sign = totalMinutes >= 0 ? '' : '−';
+    return `${sign}${h}h\u2009${m}m per day`;
   }, []);
 
   const CustomTooltip = useCallback(({ active, payload }) => {
@@ -362,16 +366,16 @@ const DawnDeltaTool = () => {
           </label>
           <input
             type="range"
-            min="-66"
-            max="66"
+            min="-90"
+            max="90"
             value={latitude}
             onChange={(e) => setLatitude(Number(e.target.value))}
             className="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer"
           />
           <div className="flex justify-between text-sm text-gray-500 mt-1">
-            <span>Antarctic Circle</span>
+            <span>South Pole</span>
             <span>Equator</span>
-            <span>Arctic Circle</span>
+            <span>North Pole</span>
           </div>
         </div>
 
@@ -435,8 +439,7 @@ const DawnDeltaTool = () => {
             step="7"
             value={dstStart}
             onChange={(e) => setDstStart(Number(e.target.value))}
-            disabled={!dstEnabled}
-            className={`w-full h-2 rounded-lg appearance-none cursor-pointer ${dstEnabled ? 'bg-yellow-200' : 'bg-gray-200 opacity-50 cursor-not-allowed'}`}
+            className={`w-full h-2 rounded-lg appearance-none cursor-pointer ${dstEnabled ? 'bg-yellow-200' : 'bg-gray-200 opacity-50'}`}
           />
         </div>
 
@@ -451,17 +454,18 @@ const DawnDeltaTool = () => {
             step="7"
             value={dstEnd}
             onChange={(e) => setDstEnd(Number(e.target.value))}
-            disabled={!dstEnabled}
-            className={`w-full h-2 rounded-lg appearance-none cursor-pointer ${dstEnabled ? 'bg-orange-200' : 'bg-gray-200 opacity-50 cursor-not-allowed'}`}
+            className={`w-full h-2 rounded-lg appearance-none cursor-pointer ${dstEnabled ? 'bg-orange-200' : 'bg-gray-200 opacity-50'}`}
           />
         </div>
 
         <div className="bg-blue-50 p-4 rounded-lg">
-          <p className="text-lg font-semibold text-gray-700">
-            Wasted daylight: {Math.round(wastedDaylight)} hours/year <span className="text-sm font-normal text-gray-600">({formatHoursPerDay(wastedDaylight / 365.25)})</span>
+          <p className="text-lg font-semibold text-gray-700 flex items-center">
+            <span className="inline-block w-4 h-4 bg-red-500 bg-opacity-50 rounded mr-2"></span>
+            Wasted daylight: {Math.round(wastedDaylight)} hours/year <span className="text-sm font-normal text-gray-600 ml-1"> ({formatHoursPerDay(wastedDaylight / 365.25)})</span>
           </p>
-          <p className="text-lg font-semibold text-gray-700 mt-2">
-            DST savings: {formatHoursWithSign(dstSavings)} <span className="text-sm font-normal text-gray-600">({formatHoursPerDay(dstSavings / 365.25)})</span>
+          <p className="text-lg font-semibold text-gray-700 mt-2 flex items-center">
+            <span className="mr-2">✓</span>
+            DST savings: {formatHoursWithSign(dstSavings)} <span className="text-sm font-normal text-gray-600 ml-1"> ({formatHoursPerDay(dstSavings / 365.25)})</span>
           </p>
         </div>
       </div>

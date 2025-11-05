@@ -193,24 +193,75 @@ also can you make sure the locale appears (dynamically) after the DST start date
 
 _[version 24]_
 
+perfection. but the tiniest glitch (ONLY fix this if it makes the code cleaner): the knobs for the DST sliders don't ungray until the first time they're hovered over.
+
+_[version 25]_
+
+ah, yes, removing if-statements is always a win! go ahead.
+
+_[version 26]_
+
+much better! that was less tiny than i thought! next requests: 
+1. allow latitude all the way to the poles, just to see what that does to the graph.
+2. add a red swatch in front of "Wasted daylight" as a sort of legend.
+3. to be less northern-hemisphere-centric, the baseline of summer solstice dawn should adapt to negative latitudes. ie, for negative latitudes summer solstice is what northerners call winter solstice.
+
+_[version 26]_
+
+very cool. something glitches slightly when we go inside the arctic and antarctic circles. the red line for sunset is no longer a function (doesn't pass the vertical line test) and it doesn't handle this gracefully. the daylight area is like the opposite of an hourglass with a bulge in the middle, and the red line should hug that bulge. instead it hugs the top but then when it gets to the middle it drops vertically straight down. again, let's not fix by adding complexity. but if you can spot the problem and have a clean fix, that would be nice.
+
+_[version 27]_
+
+your theory sounded good, but the bug persists. whatever you do, don't go into spaghetti-throwing mode.
+
+side issue: the color of the swatch is a brighter red than the shaded area on the graph. can you make them match? and can you put a checkmark emoji in front of the final DST savings line, just so that it matches the layout of the line above?
+
+_[version 28]_
+
+formatting/color stuff looks great! do you want to try thinking extra hard about vertical line issue and see what you come up with? give your probability that it will work first, then we can decide whether to try it.
+
+_[version 29]_
+
+if it's not adding complexity, we can try using nulls like you suggest.
+
+tinier issue i just noticed: use only one minus sign for a negative amount of time. currently i see this: "−86h 1m(-1h -14m per day)".
+also i just noticed that there's no space before the open paren. and remember about math minus signs.
+
+_[version 30]_
+
+excellent work. the null trick solved the problem! but somehow i still don't see a space before the open paren in the DST savings line. i do see it on the previous line. are those lines different in some way?
+
+_[version 31]_
+
+_[version 32]_
+
+_[version 33]_
+
+_[version 34]_
+
+_[version 35]_
+
+_[version 36]_
+
+_[version 37]_
+
+_[version 38]_
+
+_[version 39]_
 
 
 TODO: 
 
-allow latitude all the way to the poles, just to see what that does to the graph
-
-red swatch in front of "Wasted daylight" as a sort of legend.
-
 revert if it makes it worse but:
 if wake time is at zero and you check the DST checkbox, it should wrap to the top of the graph rather than increase the y-axis range to start at -1 instead +0. basically everything should be graphed mod 24.
 
-to be less northern-hemisphere-centric, the baseline of summer solstice dawn should adapt to negative latitudes. in that case summer solstice is what northerners call winter solstice.
-
-shading bug when wake time is between +12 and around +15 for 45 degrees latitude: it doesn't shade the full width of the graph.
+give up on this before adding complexity (if you're solving it by adding complexity you're probably doing it wrong) but there's a shading bug for example when wake time is between +12 and around +15 for 45 degrees latitude: it doesn't shade the full width of the graph.
 
 for each displayed city, can we show a sunrise emoji after it and then the time of day like "6:42am" for the time of day _without DST_ of dawn on summer solstice for that city?
 then a tooltip can say "local time of dawn on the summer solstice in this city _without DST_, used as the baseline (+0:00) on the graph"
 actually, let's have that change dynamically to be with/without depending on if the DST checkbox is checked. that's part of the scenario exploring the tool provides: what time would dawn be with and without DST?
+
+can we have a tooltip explaining how we convert "first sunday in november" or whatever to a specific date by computing the average date that that works out to. you can include the actual formulas that GPT-5 came up with (and give GPT-5 credit).
 
 for codebuff probably:
 can we deal with this warning, if it matters?
