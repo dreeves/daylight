@@ -62,65 +62,68 @@ const DawnDeltaTool = () => {
   // Data sources: Wikipedia city coordinates, rounded to nearest degree
   // Population data from 2020-2024 metropolitan area estimates
   const getCitiesForLatitude = useCallback((lat) => {
+    // City data with sunrise time on summer solstice WITHOUT DST (decimal hours in 24h format)
+    // Northern Hemisphere: June 21, Southern Hemisphere: December 21
+    // Times adjusted from displayed DST times where applicable
     const cityData = {
-      64: [{ name: 'Reykjavik', pop: 233034 }],
-      60: [{ name: 'Saint Petersburg', pop: 5.6e6 }, { name: 'Helsinki', pop: 1.5e6 }, { name: 'Oslo', pop: 1.04e6 }],
-      59: [{ name: 'Stockholm', pop: 2.4e6 }],
-      56: [{ name: 'Moscow', pop: 21.5e6 }, { name: 'Copenhagen', pop: 2.1e6 }],
-      55: [{ name: 'Edinburgh', pop: 900000 }],
-      54: [{ name: 'Hamburg', pop: 5.1e6 }],
-      53: [{ name: 'Dublin', pop: 1.4e6 }],
-      52: [{ name: 'Berlin', pop: 6.1e6 }, { name: 'Warsaw', pop: 3.1e6 }, { name: 'Amsterdam', pop: 2.4e6 }],
-      51: [{ name: 'London', pop: 14.3e6 }, { name: 'Calgary', pop: 1.6e6 }],
-      50: [{ name: 'Frankfurt', pop: 5.9e6 }, { name: 'Prague', pop: 2.7e6 }, { name: 'Vancouver', pop: 2.6e6 }],
-      49: [{ name: 'Paris', pop: 11.2e6 }, { name: 'Munich', pop: 6.1e6 }],
-      48: [{ name: 'Seattle', pop: 4.0e6 }, { name: 'Vienna', pop: 2.9e6 }],
-      46: [{ name: 'Montreal', pop: 4.3e6 }, { name: 'Portland', pop: 2.5e6 }],
-      45: [{ name: 'Milan', pop: 7.6e6 }, { name: 'Minneapolis', pop: 3.7e6 }],
-      44: [{ name: 'Toronto', pop: 6.4e6 }],
-      43: [{ name: 'Boston', pop: 4.9e6 }, { name: 'Marseille', pop: 1.9e6 }],
-      42: [{ name: 'Chicago', pop: 9.6e6 }, { name: 'Rome', pop: 4.3e6 }],
-      41: [{ name: 'New York', pop: 19.5e6 }, { name: 'Istanbul', pop: 15.8e6 }, { name: 'Madrid', pop: 6.7e6 }],
-      40: [{ name: 'Beijing', pop: 21.5e6 }, { name: 'Philadelphia', pop: 6.2e6 }],
-      39: [{ name: 'Washington DC', pop: 6.4e6 }, { name: 'Ankara', pop: 5.7e6 }],
-      38: [{ name: 'Seoul', pop: 25.5e6 }, { name: 'San Francisco', pop: 4.7e6 }, { name: 'Athens', pop: 3.1e6 }],
-      37: [{ name: 'Los Angeles', pop: 12.5e6 }],
-      36: [{ name: 'Tokyo', pop: 37.3e6 }],
-      35: [{ name: 'Tokyo', pop: 37.3e6 }, { name: 'Las Vegas', pop: 2.3e6 }],
-      34: [{ name: 'Phoenix', pop: 4.9e6 }],
-      33: [{ name: 'Shanghai', pop: 29.2e6 }, { name: 'Dallas', pop: 7.6e6 }, { name: 'Baghdad', pop: 7.2e6 }],
-      32: [{ name: 'San Diego', pop: 3.3e6 }],
-      31: [{ name: 'Shanghai', pop: 29.2e6 }, { name: 'Cairo', pop: 21.3e6 }],
-      30: [{ name: 'Houston', pop: 7.1e6 }, { name: 'New Orleans', pop: 1.3e6 }],
-      29: [{ name: 'Delhi', pop: 32.9e6 }],
-      28: [{ name: 'Miami', pop: 6.1e6 }],
-      26: [{ name: 'Riyadh', pop: 7.7e6 }],
-      25: [{ name: 'Taipei', pop: 7.0e6 }],
-      23: [{ name: 'Kolkata', pop: 15.1e6 }, { name: 'Havana', pop: 2.1e6 }],
-      22: [{ name: 'Dhaka', pop: 22.5e6 }, { name: 'Mumbai', pop: 21.3e6 }],
-      19: [{ name: 'Mexico City', pop: 22.0e6 }, { name: 'Manila', pop: 14.7e6 }],
-      14: [{ name: 'Bangkok', pop: 17.1e6 }, { name: 'Manila', pop: 14.7e6 }],
-      13: [{ name: 'Bangkok', pop: 17.1e6 }, { name: 'Lagos', pop: 15.4e6 }],
-      9: [{ name: 'Singapore', pop: 5.9e6 }],
-      7: [{ name: 'Bogotá', pop: 11.5e6 }],
-      5: [{ name: 'Bogotá', pop: 11.5e6 }],
-      1: [{ name: 'Nairobi', pop: 5.1e6 }],
-      0: [{ name: 'Quito', pop: 2.9e6 }],
-      '-1': [{ name: 'Nairobi', pop: 5.1e6 }],
-      '-6': [{ name: 'Jakarta', pop: 34.5e6 }],
-      '-8': [{ name: 'Jakarta', pop: 34.5e6 }],
-      '-12': [{ name: 'Lima', pop: 11.2e6 }],
-      '-13': [{ name: 'Lima', pop: 11.2e6 }],
-      '-23': [{ name: 'São Paulo', pop: 22.6e6 }, { name: 'Rio de Janeiro', pop: 13.7e6 }],
-      '-26': [{ name: 'Johannesburg', pop: 10.0e6 }],
-      '-30': [{ name: 'Durban', pop: 3.7e6 }],
-      '-33': [{ name: 'Santiago', pop: 6.8e6 }, { name: 'Sydney', pop: 5.3e6 }],
-      '-34': [{ name: 'Buenos Aires', pop: 15.6e6 }, { name: 'Cape Town', pop: 4.7e6 }],
-      '-35': [{ name: 'Melbourne', pop: 5.1e6 }],
-      '-37': [{ name: 'Melbourne', pop: 5.1e6 }],
-      '-41': [{ name: 'Wellington', pop: 415000 }],
-      '-45': [{ name: 'Dunedin', pop: 130000 }],
-      '-53': [{ name: 'Punta Arenas', pop: 130000 }],
+      64: [{ name: 'Reykjavik', pop: 233034, sunrise: 3.05 }], // Iceland no DST
+      60: [{ name: 'Saint Petersburg', pop: 5.6e6, sunrise: 3.78 }, { name: 'Helsinki', pop: 1.5e6, sunrise: 2.87 }, { name: 'Oslo', pop: 1.04e6, sunrise: 2.95 }], // Russia no DST, Finland/Norway have DST
+      59: [{ name: 'Stockholm', pop: 2.4e6, sunrise: 2.58 }], // Sweden has DST
+      56: [{ name: 'Moscow', pop: 21.5e6, sunrise: 3.72 }, { name: 'Copenhagen', pop: 2.1e6, sunrise: 3.25 }], // Russia no DST, Denmark has DST
+      55: [{ name: 'Edinburgh', pop: 900000, sunrise: 3.47 }], // UK has DST
+      54: [{ name: 'Hamburg', pop: 5.1e6, sunrise: 3.77 }], // Germany has DST
+      53: [{ name: 'Dublin', pop: 1.4e6, sunrise: 3.95 }], // Ireland has DST
+      52: [{ name: 'Berlin', pop: 6.1e6, sunrise: 3.78 }, { name: 'Warsaw', pop: 3.1e6, sunrise: 3.38 }, { name: 'Amsterdam', pop: 2.4e6, sunrise: 4.18 }], // All have DST
+      51: [{ name: 'London', pop: 14.3e6, sunrise: 3.78 }, { name: 'Calgary', pop: 1.6e6, sunrise: 4.33 }], // Both have DST
+      50: [{ name: 'Frankfurt', pop: 5.9e6, sunrise: 4.18 }, { name: 'Prague', pop: 2.7e6, sunrise: 3.93 }, { name: 'Vancouver', pop: 2.6e6, sunrise: 4.12 }], // All have DST
+      49: [{ name: 'Paris', pop: 11.2e6, sunrise: 4.80 }, { name: 'Munich', pop: 6.1e6, sunrise: 4.15 }], // Both have DST
+      48: [{ name: 'Seattle', pop: 4.0e6, sunrise: 4.20 }, { name: 'Vienna', pop: 2.9e6, sunrise: 3.93 }], // Both have DST
+      46: [{ name: 'Montreal', pop: 4.3e6, sunrise: 4.08 }, { name: 'Portland', pop: 2.5e6, sunrise: 4.37 }], // Both have DST
+      45: [{ name: 'Milan', pop: 7.6e6, sunrise: 4.57 }, { name: 'Minneapolis', pop: 3.7e6, sunrise: 4.43 }], // Both have DST
+      44: [{ name: 'Toronto', pop: 6.4e6, sunrise: 4.60 }], // Canada has DST
+      43: [{ name: 'Boston', pop: 4.9e6, sunrise: 4.18 }, { name: 'Marseille', pop: 1.9e6, sunrise: 5.00 }], // Both have DST
+      42: [{ name: 'Chicago', pop: 9.6e6, sunrise: 4.30 }, { name: 'Rome', pop: 4.3e6, sunrise: 4.57 }], // Both have DST
+      41: [{ name: 'New York', pop: 19.5e6, sunrise: 4.43 }, { name: 'Istanbul', pop: 15.8e6, sunrise: 5.60 }, { name: 'Madrid', pop: 6.7e6, sunrise: 5.73 }], // NY has DST, Turkey no DST, Spain has DST
+      40: [{ name: 'Beijing', pop: 21.5e6, sunrise: 4.77 }, { name: 'Philadelphia', pop: 6.2e6, sunrise: 4.55 }], // China no DST, USA has DST
+      39: [{ name: 'Washington DC', pop: 6.4e6, sunrise: 4.75 }, { name: 'Ankara', pop: 5.7e6, sunrise: 5.70 }], // USA has DST, Turkey no DST
+      38: [{ name: 'Seoul', pop: 25.5e6, sunrise: 5.12 }, { name: 'San Francisco', pop: 4.7e6, sunrise: 4.80 }, { name: 'Athens', pop: 3.1e6, sunrise: 5.00 }], // Korea no DST, USA has DST, Greece has DST
+      37: [{ name: 'Los Angeles', pop: 12.5e6, sunrise: 4.70 }], // USA has DST
+      36: [{ name: 'Tokyo', pop: 37.3e6, sunrise: 4.43 }], // Japan no DST
+      35: [{ name: 'Tokyo', pop: 37.3e6, sunrise: 4.43 }, { name: 'Las Vegas', pop: 2.3e6, sunrise: 4.47 }], // Japan no DST, Nevada has DST
+      34: [{ name: 'Phoenix', pop: 4.9e6, sunrise: 5.33 }], // Arizona no DST
+      33: [{ name: 'Shanghai', pop: 29.2e6, sunrise: 4.85 }, { name: 'Dallas', pop: 7.6e6, sunrise: 5.27 }, { name: 'Baghdad', pop: 7.2e6, sunrise: 5.17 }], // China no DST, USA has DST, Iraq no DST
+      32: [{ name: 'San Diego', pop: 3.3e6, sunrise: 4.73 }], // USA has DST
+      31: [{ name: 'Shanghai', pop: 29.2e6, sunrise: 4.85 }, { name: 'Cairo', pop: 21.3e6, sunrise: 4.93 }], // China no DST, Egypt no DST
+      30: [{ name: 'Houston', pop: 7.1e6, sunrise: 5.35 }, { name: 'New Orleans', pop: 1.3e6, sunrise: 5.25 }], // Both have DST
+      29: [{ name: 'Delhi', pop: 32.9e6, sunrise: 5.42 }], // India no DST
+      28: [{ name: 'Miami', pop: 6.1e6, sunrise: 5.47 }], // USA has DST
+      26: [{ name: 'Riyadh', pop: 7.7e6, sunrise: 5.40 }], // Saudi Arabia no DST
+      25: [{ name: 'Taipei', pop: 7.0e6, sunrise: 5.12 }], // Taiwan no DST
+      23: [{ name: 'Kolkata', pop: 15.1e6, sunrise: 4.93 }, { name: 'Havana', pop: 2.1e6, sunrise: 5.60 }], // India no DST, Cuba has DST
+      22: [{ name: 'Dhaka', pop: 22.5e6, sunrise: 5.17 }, { name: 'Mumbai', pop: 21.3e6, sunrise: 6.00 }], // Bangladesh no DST, India no DST
+      19: [{ name: 'Mexico City', pop: 22.0e6, sunrise: 7.00 }, { name: 'Manila', pop: 14.7e6, sunrise: 5.50 }], // Mexico no DST, Philippines no DST
+      14: [{ name: 'Bangkok', pop: 17.1e6, sunrise: 5.87 }, { name: 'Manila', pop: 14.7e6, sunrise: 5.50 }], // Thailand no DST, Philippines no DST
+      13: [{ name: 'Bangkok', pop: 17.1e6, sunrise: 5.87 }, { name: 'Lagos', pop: 15.4e6, sunrise: 6.50 }], // Thailand no DST, Nigeria no DST
+      9: [{ name: 'Singapore', pop: 5.9e6, sunrise: 7.00 }], // Singapore no DST
+      7: [{ name: 'Bogotá', pop: 11.5e6, sunrise: 5.75 }], // Colombia no DST
+      5: [{ name: 'Bogotá', pop: 11.5e6, sunrise: 5.75 }], // Colombia no DST
+      1: [{ name: 'Nairobi', pop: 5.1e6, sunrise: 6.53 }], // Kenya no DST
+      0: [{ name: 'Quito', pop: 2.9e6, sunrise: 6.25 }], // Ecuador no DST
+      '-1': [{ name: 'Nairobi', pop: 5.1e6, sunrise: 6.53 }], // Kenya no DST
+      '-6': [{ name: 'Jakarta', pop: 34.5e6, sunrise: 6.00 }], // Indonesia no DST
+      '-8': [{ name: 'Jakarta', pop: 34.5e6, sunrise: 6.00 }], // Indonesia no DST
+      '-12': [{ name: 'Lima', pop: 11.2e6, sunrise: 6.78 }], // Peru no DST
+      '-13': [{ name: 'Lima', pop: 11.2e6, sunrise: 6.78 }], // Peru no DST
+      '-23': [{ name: 'São Paulo', pop: 22.6e6, sunrise: 6.93 }, { name: 'Rio de Janeiro', pop: 13.7e6, sunrise: 7.05 }], // Brazil stopped DST in 2019
+      '-26': [{ name: 'Johannesburg', pop: 10.0e6, sunrise: 6.87 }], // South Africa no DST
+      '-30': [{ name: 'Durban', pop: 3.7e6, sunrise: 6.83 }], // South Africa no DST
+      '-33': [{ name: 'Santiago', pop: 6.8e6, sunrise: 8.03 }, { name: 'Sydney', pop: 5.3e6, sunrise: 6.02 }], // Chile stopped DST 2019, Australia has DST
+      '-34': [{ name: 'Buenos Aires', pop: 15.6e6, sunrise: 8.05 }, { name: 'Cape Town', pop: 4.7e6, sunrise: 7.75 }], // Argentina stopped DST 2009, SA no DST
+      '-35': [{ name: 'Melbourne', pop: 5.1e6, sunrise: 6.57 }], // Australia has DST
+      '-37': [{ name: 'Melbourne', pop: 5.1e6, sunrise: 6.57 }], // Australia has DST
+      '-41': [{ name: 'Wellington', pop: 415000, sunrise: 6.82 }], // NZ has DST
+      '-45': [{ name: 'Dunedin', pop: 130000, sunrise: 7.15 }], // NZ has DST
+      '-53': [{ name: 'Punta Arenas', pop: 130000, sunrise: 8.77 }], // Chile stopped DST 2019
     };
     
     const roundedLat = Math.round(lat);
@@ -130,11 +133,8 @@ const DawnDeltaTool = () => {
     
     return cities
       .sort((a, b) => b.pop - a.pop)
-      .slice(0, 3)
-      .map(c => c.name);
+      .slice(0, 3);
   }, []);
-
-  const cityNames = useMemo(() => getCitiesForLatitude(latitude), [latitude, getCitiesForLatitude]);
 
   const sleepHours = useMemo(() => {
     return 24 - (bedtime - wakeTime);
@@ -174,6 +174,31 @@ const DawnDeltaTool = () => {
     const hourAngle = Math.acos(cosHourAngle);
     return 12 + (hourAngle * 12) / Math.PI;
   }, []);
+
+  // Format sunrise times for display with DST adjustment
+  const cityDisplayData = useMemo(() => {
+    const cities = getCitiesForLatitude(latitude);
+    if (cities.length === 0) return [];
+    
+    const totalDays = 365;
+    const summerSolsticeDay = latitude >= 0 ? 172 : 355;
+    const isDST = dstEnabled && isDSTActive(summerSolsticeDay, false);
+    const dstOffset = isDST ? 1 : 0;
+    
+    return cities.map(city => {
+      const localClockTime = (city.sunrise + dstOffset) % 24;
+      
+      const hours = Math.floor(localClockTime);
+      const minutes = Math.round((localClockTime - hours) * 60);
+      const period = hours >= 12 ? 'pm' : 'am';
+      const displayHours = hours % 12 || 12;
+      
+      return {
+        name: city.name,
+        time: `${displayHours}:${minutes.toString().padStart(2, '0')}${period}`
+      };
+    });
+  }, [latitude, getCitiesForLatitude, dstEnabled, isDSTActive]);
 
   const calculateYearData = useCallback((isLeapYear, useDST) => {
     const totalDays = isLeapYear ? 366 : 365;
@@ -362,7 +387,11 @@ const DawnDeltaTool = () => {
       <div className="bg-white p-6 rounded-lg shadow mb-6">
         <div className="mb-4">
           <label className="block text-lg font-semibold mb-2 text-gray-700">
-            Latitude: {latitude}°{cityNames.length > 0 ? ` (${cityNames.join(', ')})` : ''}
+            Latitude: {latitude}°{cityDisplayData.length > 0 ? (
+              <span>
+                {' '}({cityDisplayData.map(city => `${city.name} ${city.time ? `🌅 ${city.time}` : ''}`).join(', ')})
+              </span>
+            ) : ''}
           </label>
           <input
             type="range"
@@ -500,6 +529,28 @@ const DawnDeltaTool = () => {
             <Line type="monotone" dataKey="sleepTime" stroke="#7c3aed" strokeWidth={2} dot={false} isAnimationActive={false} strokeDasharray="5 5" />
           </ComposedChart>
         </ResponsiveContainer>
+      </div>
+
+      <div className="bg-white p-6 rounded-lg shadow mt-6">
+        <h2 className="text-xl font-bold mb-4 text-gray-800">Help</h2>
+        
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold mb-2 text-gray-700">Sunrise times (🌅)</h3>
+          <p className="text-gray-700">
+            Local time of dawn on the summer solstice in each city {dstEnabled ? 'with' : 'without'} DST, used as the baseline (+0:00) on the graph.
+          </p>
+        </div>
+
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold mb-2 text-gray-700">DST start/end dates</h3>
+          <p className="text-gray-700 mb-2">
+            <strong>Note from Claude (the AI assistant that built this tool):</strong> DST rules like "last Sunday in March" are converted to average dates over the 400-year Gregorian cycle. The formulas used were derived by GPT-5-Thinking:
+          </p>
+          <ul className="list-disc list-inside space-y-1 text-gray-700 ml-4">
+            <li>The kth [day-of-week] of a month averages to day <strong>7k−3</strong></li>
+            <li>The last [day-of-week] averages to day <strong>L−3</strong>, where L is the month length (28.2425 for February)</li>
+          </ul>
+        </div>
       </div>
     </div>
   );

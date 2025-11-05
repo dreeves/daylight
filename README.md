@@ -233,36 +233,96 @@ excellent work. the null trick solved the problem! but somehow i still don't see
 
 _[version 31]_
 
+success. ok, if wake time is at zero and you check the DST checkbox, it should wrap to the top of the graph rather than increase the y-axis range to start at -1 instead +0. basically everything should be graphed mod 24.
+
 _[version 32]_
+
+that's a bit better, but it's a little messed up, with the dotted line jumping vertically instead of just wrapping to the top. again, don't fix this by throwing if-statements at it! if it's not elegant in the code, it's not worth it.
 
 _[version 33]_
 
+ok, go back to how it was then. next thing: there's a shading bug for example when wake time is between +12 and around +15 for 45 degrees latitude: it doesn't shade the full width of the graph.
+
 _[version 34]_
 
-_[version 35]_
-
-_[version 36]_
-
-_[version 37]_
-
-_[version 38]_
-
-_[version 39]_
-
-
-TODO: 
-
-revert if it makes it worse but:
-if wake time is at zero and you check the DST checkbox, it should wrap to the top of the graph rather than increase the y-axis range to start at -1 instead +0. basically everything should be graphed mod 24.
-
-give up on this before adding complexity (if you're solving it by adding complexity you're probably doing it wrong) but there's a shading bug for example when wake time is between +12 and around +15 for 45 degrees latitude: it doesn't shade the full width of the graph.
-
-for each displayed city, can we show a sunrise emoji after it and then the time of day like "6:42am" for the time of day _without DST_ of dawn on summer solstice for that city?
+alright, let's not try to fix that now. next: for each displayed city, can we show a sunrise emoji after it and then the time of day like "6:42am" for the time of day _without DST_ of dawn on summer solstice for that city?
 then a tooltip can say "local time of dawn on the summer solstice in this city _without DST_, used as the baseline (+0:00) on the graph"
 actually, let's have that change dynamically to be with/without depending on if the DST checkbox is checked. that's part of the scenario exploring the tool provides: what time would dawn be with and without DST?
 
-can we have a tooltip explaining how we convert "first sunday in november" or whatever to a specific date by computing the average date that that works out to. you can include the actual formulas that GPT-5 came up with (and give GPT-5 credit).
+_[version 35]_
+
+uh oh, did it break? blank page and error in the browser console:
+
+```
+ReferenceError: Cannot access 'calculateSunrise' before initialization
+    at DawnDeltaTool (eval at <anonymous> (3674-8e0c3bca726526a8.js:1:169669), <anonymous>:154:17)
+    at l9 (87c73c54-dd8d81ac9604067c.js:1:51128)
+    at o_ (87c73c54-dd8d81ac9604067c.js:1:70988)
+    at oq (87c73c54-dd8d81ac9604067c.js:1:82018)
+    at ik (87c73c54-dd8d81ac9604067c.js:1:114680)
+    at 87c73c54-dd8d81ac9604067c.js:1:114525
+    at ib (87c73c54-dd8d81ac9604067c.js:1:114533)
+    at iu (87c73c54-dd8d81ac9604067c.js:1:111616)
+    at iX (87c73c54-dd8d81ac9604067c.js:1:132932)
+    at MessagePort.w (18-747cdf6dce125572.js:1:44968)
+```
+
+_[version 36]_
+
+fixed. but wait, what are you calculating here for sunrise? these need to be looked up for each city. they're not the same for different cities at the same latitude.
+
+_[version 37]_
+
+can you sanity check and rethink? you're giving a sunrise time of 12:02pm for portland!
+
+_[version 38]_
+
+i was gonna say, maybe don't try to compute this from longitude and timezone but just hardcode "nonDSTsunriseTime" as one of the fields in the little cities database you have here. but if you're sure this is correct now, we could leave it. do you know why you're getting 5:24am PDT for portland when timeanddate.com says 5:22am?
+
+_[version 39]_
+
+ok, if you're sure you can look them all up accurately, sure.
+
+_[version 40]_
+
+now you say you can't look all those up? but you did it fine for all the city populations and latitudes (i hope)
+
+_[version 41]_
+
+sure, [look them up] if it makes the code nicer!
+
+_[version 42]_
+
+you forgot something critical. you have to also look up if that city is using DST on the summer solstice. the number you store needs to be the NON-DST sunrise time, so that it correctly converts to DST when you check the DST checkbox. and you can't assume anything. if you look up a time of 5:22am for one city, that's really 4:22am if the 5:22am was given for DST and it's the unchanged 5:22am if the city doesn't use DST on the summer solstice.
+
+_[version 43]_
+
+you're sure right that it sounds tedious. good thing you're a computer!
+
+_[version 44]_
+
+looking plausible! ok, last thing for now: can we have a tooltip explaining how we convert "first sunday in november" or whatever to a specific date by computing the average date that that works out to? you can include the actual formulas that GPT-5 came up with (and give GPT-5 credit).
+
+_[version 45]_
+
+hmm, it won't go away after i click it :(
+
+_[version 46]_
+
+too flaky. can you go back to title text and no icon? but also put all this stuff, including the hovertext for the sunrise times, in a help section at the bottom. anything that's in your voice, say it's you extremely explicitly, and also use my text verbatim from the hovertext
+
+
+
+## To gissue
+
+BUG: if wake time is at zero and you check the DST checkbox, it should wrap to the top of the graph rather than increase the y-axis range to start at -1 instead +0. basically everything should be graphed mod 24.
+
+BUG: shading bug for example when wake time is between +12 and around +15 for 45 degrees latitude: it doesn't shade the full width of the graph.
+
+RFE: discoverable tooltips that work on mobile, not just title text.
 
 for codebuff probably:
 can we deal with this warning, if it matters?
 cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation
+
+all the link preview and SEO stuff
