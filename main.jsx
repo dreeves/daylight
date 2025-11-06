@@ -385,10 +385,12 @@ const DawnDeltaTool = () => {
       return (
         <div className="bg-white p-3 border border-gray-300 rounded shadow-lg">
           <p className="font-semibold mb-2">{monthDay}</p>
-          <p className="text-sm">🌅 @ {formatTimeDelta(data.dawnDelta)}</p>
-          <p className="text-sm mt-1">☀️ / 🌙: {formatHours(daylightHours)} / {formatHours(nightHours)}</p>
+          <p className="text-sm">🌅 {formatTimeDelta(data.dawnDelta)}</p>
+          <p className="text-sm mt-1">{formatHours(daylightHours)} ☀️ &nbsp; {formatHours(nightHours)} 🌙</p>
           <p>&nbsp;</p>
-          <p className="text-sm">💤: {formatHours(sleepDuringNight)} 🌙 + <span className={wasteColor}>{formatHours(sleepDuringDay)}</span> ☀️</p>
+          <p className="text-sm">Night vs daytime sleep 💤</p>
+          <p className="text-sm">🟢 {formatHours(sleepDuringNight)} 🌙</p>
+          <p className="text-sm">🔴 <span className={wasteColor}>{formatHours(sleepDuringDay)}</span> ☀️</p>
         </div>
       );
     }
