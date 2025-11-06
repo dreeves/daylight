@@ -200,6 +200,31 @@ const DawnDeltaTool = () => {
     });
   }, [latitude, getCitiesForLatitude, dstEnabled, isDSTActive]);
 
+  // Format wake times for cities (sunrise + wakeTime offset)
+  const cityWakeDisplayData = useMemo(() => {
+    const cities = getCitiesForLatitude(latitude);
+    if (cities.length === 0) return [];
+    
+    const totalDays = 365;
+    const summerSolsticeDay = latitude >= 0 ? 172 : 355;
+    const isDST = dstEnabled && isDSTActive(summerSolsticeDay, false);
+    const dstOffset = isDST ? 1 : 0;
+    
+    return cities.map(city => {
+      const wakeClockTime = (city.sunrise + dstOffset + wakeTime) % 24;
+      
+      const hours = Math.floor(wakeClockTime);
+      const minutes = Math.round((wakeClockTime - hours) * 60);
+      const period = hours >= 12 ? 'pm' : 'am';
+      const displayHours = hours % 12 || 12;
+      
+      return {
+        name: city.name,
+        time: `${displayHours}:${minutes.toString().padStart(2, '0')}${period}`
+      };
+    });
+  }, [latitude, getCitiesForLatitude, dstEnabled, isDSTActive, wakeTime]);
+
   const calculateYearData = useCallback((isLeapYear, useDST) => {
     const totalDays = isLeapYear ? 366 : 365;
     // For Northern Hemisphere: summer solstice in June (day 172/173)
@@ -428,6 +453,11 @@ const DawnDeltaTool = () => {
       <h1 className="text-3xl font-bold mb-6 text-gray-800 text-center">Daylight Savings</h1>
       
       <div className="bg-white p-6 rounded-lg shadow mb-6">
+                <div className="mb-4">Treat Summer Solstice's Sunrise (<b>SSS</b>) as the earliest time of day to care about.
+                    The y-axis of the graph starts there.
+
+                </div>
+
         <div className="mb-4">
           <label className="block text-lg font-semibold mb-2 text-gray-700">
             Latitude: {latitude}°{cityDisplayData.length > 0 ? (
@@ -453,7 +483,11 @@ const DawnDeltaTool = () => {
 
         <div className="mb-4">
           <label className="block text-lg font-semibold mb-2 text-gray-700">
-            Wake time: {formatTimeDelta(wakeTime)} from summer solstice's sunrise
+            Wake: SSS {formatTimeDelta(wakeTime)} {cityWakeDisplayData.length > 0 ? (
+              <span>
+                {' '}({cityWakeDisplayData.map(city => `${city.name} ⏰ ${city.time}`).join(', ')})
+              </span>
+            ) : ''}
           </label>
           <input
             type="range"

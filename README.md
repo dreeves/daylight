@@ -372,8 +372,11 @@ can you do all the standard link preview and SEO stuff?
 
 _[version 54]_
 
+you see how the cities are shown in parens after the label for the latitude slider? can we also show them in parens after the Wake slider label? and in that case the timesof day shown should be x hours more than in the latitude label, where x is the value of the wake slider
 
 _[version 55]_
+
+
 _[version 56]_
 _[version 57]_
 _[version 58]_
