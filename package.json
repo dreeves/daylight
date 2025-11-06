@@ -1,6 +1,6 @@
 {
   "name": "daylight",
-  "version": "1.0.0",
+  "version": "2025.11.05-a",
   "description": "How much daylight does Daylight Savings Time save?",
   "main": "index.js",
   "scripts": {

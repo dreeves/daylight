@@ -359,9 +359,10 @@ BUG: shading bug for example when wake time is between +12 and around +15 for 45
 
 RFE: discoverable tooltips that work on mobile, not just title text.
 
-for codebuff probably:
+Codebuff falls on its face on this:
 can we deal with this warning, if it matters?
 cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation
+
 
 I see this in the browser console:
 You are calling ReactDOMClient.createRoot() on a container that has already been passed to createRoot() before. Instead, call root.render() on the existing root instead if you want to update it.
