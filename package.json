@@ -1,6 +1,6 @@
 {
   "name": "daylight",
-  "version": "2025.11.05-a",
+  "version": "2025.11.06-a",
   "description": "How much daylight does Daylight Savings Time save?",
   "main": "index.js",
   "scripts": {
@@ -27,6 +27,6 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^5.1.0",
-    "vite": "^7.1.12"
+    "vite": "^7.2.1"
   }
 }

@@ -58,94 +58,119 @@ const DawnDeltaTool = () => {
     return `${months[date.getMonth()]} ${date.getDate()}`;
   }, []);
 
-  // Note from the human (dreev):
-  // I think we should refactor this citydata database to be a list with
-  // the following fields: nom, lat, lon, pop, sss, dst.
-  // From that we can compute the hash from integer latitude to city name and 
-  // SSS. Btw, SSS means Summer Solstice's Sunrise WITHOUT DST and then the dst
-  // field is a boolean saying whether that city observes DST on its summer 
-  // solstice. 
-  // Summer solstice is June ~21 in the northern hemisphere and December ~21 in
-  // the southern hemisphere.
-  // End note from the human.
+  // City database: each city has name (nom), latitude, longitude, population,
+  // local summer solstice sunrise time WITHOUT DST (sss), and DST observation 
+  // flag.
+  // This data was collected on 2025-11-06. Cities' populations and whether they
+  // observe DST (on their summer solstice) may change.
+  const cities = [
+    { nom: 'Reykjavik', lat: 64.14, lon: -21.90, pop: 233034, sss: 2.70, dst: false },
+    { nom: 'Saint Petersburg', lat: 59.94, lon: 30.32, pop: 5.6e6, sss: 3.78, dst: false },
+    { nom: 'Helsinki', lat: 60.17, lon: 24.93, pop: 1.5e6, sss: 2.70, dst: true },
+    { nom: 'Oslo', lat: 59.91, lon: 10.75, pop: 1.04e6, sss: 3.70, dst: true },
+    { nom: 'Stockholm', lat: 59.33, lon: 18.07, pop: 1.6e6, sss: 2.58, dst: true },
+    { nom: 'Moscow', lat: 55.75, lon: 37.62, pop: 13.2e6, sss: 3.72, dst: false },
+    { nom: 'Copenhagen', lat: 55.68, lon: 12.57, pop: 2.1e6, sss: 3.43, dst: true },
+    { nom: 'Edinburgh', lat: 55.95, lon: -3.19, pop: 1.4e6, sss: 3.43, dst: true },
+    { nom: 'Hamburg', lat: 53.55, lon: 10.00, pop: 5.1e6, sss: 3.83, dst: true },
+    { nom: 'Dublin', lat: 53.35, lon: -6.26, pop: 1.9e6, sss: 4.02, dst: true },
+    { nom: 'Berlin', lat: 52.52, lon: 13.40, pop: 6.1e6, sss: 3.70, dst: true },
+    { nom: 'Warsaw', lat: 52.24, lon: 21.01, pop: 3.1e6, sss: 3.70, dst: true },
+    { nom: 'Amsterdam', lat: 52.37, lon: 4.89, pop: 2.4e6, sss: 3.70, dst: true },
+    { nom: 'London', lat: 51.51, lon: -0.13, pop: 14.3e6, sss: 3.72, dst: true },
+    { nom: 'Calgary', lat: 51.05, lon: -114.07, pop: 1.6e6, sss: 4.37, dst: true },
+    { nom: 'Frankfurt', lat: 50.11, lon: 8.68, pop: 5.9e6, sss: 3.70, dst: true },
+    { nom: 'Prague', lat: 50.08, lon: 14.43, pop: 2.7e6, sss: 3.70, dst: true },
+    { nom: 'Vancouver', lat: 49.28, lon: -123.12, pop: 2.6e6, sss: 4.12, dst: true },
+    { nom: 'Paris', lat: 48.86, lon: 2.35, pop: 11.2e6, sss: 3.70, dst: true },
+    { nom: 'Munich', lat: 48.13, lon: 11.57, pop: 6.1e6, sss: 3.70, dst: true },
+    { nom: 'Seattle', lat: 47.61, lon: -122.33, pop: 4.0e6, sss: 4.18, dst: true },
+    { nom: 'Vienna', lat: 48.21, lon: 16.37, pop: 2.9e6, sss: 3.70, dst: true },
+    { nom: 'Montreal', lat: 45.50, lon: -73.57, pop: 4.3e6, sss: 4.40, dst: true },
+    { nom: 'Portland', lat: 45.52, lon: -122.68, pop: 2.5e6, sss: 4.43, dst: true },
+    { nom: 'Milan', lat: 45.48, lon: 9.18, pop: 7.6e6, sss: 4.42, dst: true },
+    { nom: 'Minneapolis', lat: 44.98, lon: -93.27, pop: 3.7e6, sss: 4.28, dst: true },
+    { nom: 'Toronto', lat: 43.70, lon: -79.40, pop: 6.4e6, sss: 4.50, dst: true },
+    { nom: 'Boston', lat: 42.36, lon: -71.06, pop: 4.9e6, sss: 4.23, dst: true },
+    { nom: 'Marseille', lat: 43.30, lon: 5.40, pop: 1.9e6, sss: 5.00, dst: true },
+    { nom: 'Rome', lat: 41.90, lon: 12.50, pop: 4.3e6, sss: 4.50, dst: true },
+    { nom: 'Chicago', lat: 41.88, lon: -87.63, pop: 9.6e6, sss: 4.30, dst: true },
+    { nom: 'New York', lat: 40.71, lon: -74.01, pop: 19.5e6, sss: 4.42, dst: true },
+    { nom: 'Istanbul', lat: 41.00, lon: 28.97, pop: 15.8e6, sss: 4.70, dst: true },
+    { nom: 'Madrid', lat: 40.42, lon: -3.70, pop: 6.7e6, sss: 5.70, dst: true },
+    { nom: 'Beijing', lat: 39.90, lon: 116.40, pop: 21.5e6, sss: 5.07, dst: false },
+    { nom: 'Philadelphia', lat: 39.95, lon: -75.17, pop: 6.2e6, sss: 4.55, dst: true },
+    { nom: 'Washington DC', lat: 38.90, lon: -77.04, pop: 6.4e6, sss: 4.55, dst: true },
+    { nom: 'Ankara', lat: 39.93, lon: 32.86, pop: 5.7e6, sss: 4.70, dst: true },
+    { nom: 'Seoul', lat: 37.56, lon: 126.98, pop: 25.5e6, sss: 5.07, dst: false },
+    { nom: 'San Francisco', lat: 37.77, lon: -122.42, pop: 4.7e6, sss: 4.70, dst: true },
+    { nom: 'Athens', lat: 37.98, lon: 23.72, pop: 3.1e6, sss: 4.70, dst: true },
+    { nom: 'Los Angeles', lat: 34.05, lon: -118.25, pop: 13.3e6, sss: 4.70, dst: true },
+    { nom: 'Tokyo', lat: 35.68, lon: 139.76, pop: 37.3e6, sss: 4.42, dst: false },
+    { nom: 'Las Vegas', lat: 36.17, lon: -115.14, pop: 2.3e6, sss: 4.38, dst: true },
+    { nom: 'Baghdad', lat: 33.34, lon: 44.40, pop: 7.2e6, sss: 5.17, dst: false },
+    { nom: 'Dallas', lat: 32.78, lon: -96.80, pop: 7.6e6, sss: 5.32, dst: true },
+    { nom: 'San Diego', lat: 32.72, lon: -117.16, pop: 3.3e6, sss: 4.67, dst: true },
+    { nom: 'Phoenix', lat: 33.45, lon: -112.07, pop: 4.9e6, sss: 5.30, dst: false },
+    { nom: 'Shanghai', lat: 31.23, lon: 121.47, pop: 29.2e6, sss: 4.70, dst: false },
+    { nom: 'Cairo', lat: 30.04, lon: 31.24, pop: 21.3e6, sss: 5.70, dst: false },
+    { nom: 'Houston', lat: 29.76, lon: -95.37, pop: 7.1e6, sss: 5.33, dst: true },
+    { nom: 'New Orleans', lat: 29.95, lon: -90.07, pop: 1.3e6, sss: 5.12, dst: true },
+    { nom: 'Delhi', lat: 28.61, lon: 77.21, pop: 32.9e6, sss: 5.42, dst: false },
+    { nom: 'Miami', lat: 25.77, lon: -80.19, pop: 6.2e6, sss: 5.47, dst: true },
+    { nom: 'Karachi', lat: 24.86, lon: 66.99, pop: 16.9e6, sss: 6.00, dst: false },
+    { nom: 'Riyadh', lat: 24.69, lon: 46.72, pop: 7.7e6, sss: 5.70, dst: false },
+    { nom: 'Taipei', lat: 25.03, lon: 121.56, pop: 7.0e6, sss: 5.12, dst: false },
+    { nom: 'Havana', lat: 23.11, lon: -82.36, pop: 2.1e6, sss: 5.40, dst: true },
+    { nom: 'Dhaka', lat: 23.81, lon: 90.41, pop: 23.9e6, sss: 5.17, dst: false },
+    { nom: 'Kolkata', lat: 22.57, lon: 88.36, pop: 15.1e6, sss: 5.27, dst: false },
+    { nom: 'Mumbai', lat: 19.07, lon: 72.88, pop: 23.4e6, sss: 6.00, dst: false },
+    { nom: 'Mexico City', lat: 19.43, lon: -99.13, pop: 22.0e6, sss: 5.97, dst: false },
+    { nom: 'Manila', lat: 14.60, lon: 120.98, pop: 14.7e6, sss: 5.47, dst: false },
+    { nom: 'Bangkok', lat: 13.75, lon: 100.50, pop: 17.1e6, sss: 5.83, dst: false },
+    { nom: 'Lagos', lat: 6.52, lon: 3.38, pop: 15.4e6, sss: 5.48, dst: false },
+    { nom: 'Bogotá', lat: 4.65, lon: -74.06, pop: 11.5e6, sss: 5.67, dst: false },
+    { nom: 'Singapore', lat: 1.35, lon: 103.82, pop: 5.9e6, sss: 7.12, dst: false },
+    { nom: 'Quito', lat: -0.18, lon: -78.47, pop: 2.9e6, sss: 6.05, dst: false },
+    { nom: 'Nairobi', lat: -1.29, lon: 36.82, pop: 5.1e6, sss: 5.70, dst: false },
+    { nom: 'Jakarta', lat: -6.21, lon: 106.85, pop: 34.5e6, sss: 5.42, dst: false },
+    { nom: 'Lima', lat: -12.04, lon: -77.03, pop: 11.2e6, sss: 5.55, dst: false },
+    { nom: 'São Paulo', lat: -23.55, lon: -46.63, pop: 22.6e6, sss: 4.28, dst: true },
+    { nom: 'Rio de Janeiro', lat: -22.91, lon: -43.20, pop: 13.7e6, sss: 4.07, dst: true },
+    { nom: 'Johannesburg', lat: -26.20, lon: 28.05, pop: 10.0e6, sss: 6.87, dst: false },
+    { nom: 'Durban', lat: -29.86, lon: 31.02, pop: 3.7e6, sss: 6.83, dst: false },
+    { nom: 'Santiago', lat: -33.45, lon: -70.67, pop: 6.8e6, sss: 5.50, dst: true },
+    { nom: 'Sydney', lat: -33.87, lon: 151.21, pop: 5.3e6, sss: 4.67, dst: true },
+    { nom: 'Buenos Aires', lat: -34.60, lon: -58.38, pop: 15.6e6, sss: 5.62, dst: false },
+    { nom: 'Cape Town', lat: -33.55, lon: 18.25, pop: 4.7e6, sss: 7.75, dst: false },
+    { nom: 'Melbourne', lat: -37.81, lon: 144.96, pop: 5.1e6, sss: 4.90, dst: true },
+    { nom: 'Wellington', lat: -41.29, lon: 174.78, pop: 415000, sss: 4.72, dst: true },
+    { nom: 'Dunedin', lat: -45.87, lon: 170.50, pop: 130000, sss: 4.72, dst: true },
+    { nom: 'Punta Arenas', lat: -53.16, lon: -70.92, pop: 130000, sss: 5.50, dst: true },
+  ];
 
-  // Get city names for exact integer latitude
-  // Data sources: Wikipedia city coordinates, rounded to nearest degree
-  // Population data from 2020-2024 metropolitan area estimates
-  const getCitiesForLatitude = useCallback((lat) => {
-    // City data with sunrise time on summer solstice WITHOUT DST (decimal hours in 24h format)
-    // Northern Hemisphere: June 21, Southern Hemisphere: December 21
-    // Times adjusted from displayed DST times where applicable
-    const cityData = {
-      64: [{ name: 'Reykjavik', pop: 233034, sunrise: 2.70 }], // Iceland no DST
-      60: [{ name: 'Saint Petersburg', pop: 5.6e6, sunrise: 3.78 }, { name: 'Helsinki', pop: 1.5e6, sunrise: 2.70 }, { name: 'Oslo', pop: 1.04e6, sunrise: 3.70 }], // Russia no DST, Finland/Norway have DST
-      59: [{ name: 'Stockholm', pop: 2.4e6, sunrise: 2.58 }], // Sweden has DST
-      56: [{ name: 'Moscow', pop: 21.5e6, sunrise: 3.72 }, { name: 'Copenhagen', pop: 2.1e6, sunrise: 3.25 }], // Russia no DST, Denmark has DST
-      55: [{ name: 'Edinburgh', pop: 900000, sunrise: 3.47 }], // UK has DST
-      54: [{ name: 'Hamburg', pop: 5.1e6, sunrise: 3.77 }], // Germany has DST
-      53: [{ name: 'Dublin', pop: 1.4e6, sunrise: 3.95 }], // Ireland has DST
-      52: [{ name: 'Berlin', pop: 6.1e6, sunrise: 3.70 }, { name: 'Warsaw', pop: 3.1e6, sunrise: 3.70 }, { name: 'Amsterdam', pop: 2.4e6, sunrise: 3.70 }], // All have DST
-      51: [{ name: 'London', pop: 14.3e6, sunrise: 3.78 }, { name: 'Calgary', pop: 1.6e6, sunrise: 4.33 }], // Both have DST
-      50: [{ name: 'Frankfurt', pop: 5.9e6, sunrise: 3.70 }, { name: 'Prague', pop: 2.7e6, sunrise: 3.70 }, { name: 'Vancouver', pop: 2.6e6, sunrise: 4.12 }], // All have DST
-      49: [{ name: 'Paris', pop: 11.2e6, sunrise: 3.70 }, { name: 'Munich', pop: 6.1e6, sunrise: 3.70 }], // Both have DST
-      48: [{ name: 'Seattle', pop: 4.0e6, sunrise: 4.18 }, { name: 'Vienna', pop: 2.9e6, sunrise: 3.70 }], // Both have DST
-      46: [{ name: 'Montreal', pop: 4.3e6, sunrise: 4.40 }, { name: 'Portland', pop: 2.5e6, sunrise: 4.43 }], // Both have DST
-      45: [{ name: 'Milan', pop: 7.6e6, sunrise: 4.42 }, { name: 'Minneapolis', pop: 3.7e6, sunrise: 4.28 }], // Both have DST
-      44: [{ name: 'Toronto', pop: 6.4e6, sunrise: 4.50 }], // Canada has DST
-      43: [{ name: 'Boston', pop: 4.9e6, sunrise: 4.18 }, { name: 'Marseille', pop: 1.9e6, sunrise: 5.00 }], // Both have DST
-      42: [{ name: 'Chicago', pop: 9.6e6, sunrise: 4.30 }, { name: 'Rome', pop: 4.3e6, sunrise: 4.57 }], // Both have DST
-      41: [{ name: 'New York', pop: 19.5e6, sunrise: 4.42 }, { name: 'Istanbul', pop: 15.8e6, sunrise: 4.70 }, { name: 'Madrid', pop: 6.7e6, sunrise: 5.70 }], // NY has DST, Turkey has DST, Spain has DST
-      40: [{ name: 'Beijing', pop: 21.5e6, sunrise: 5.07 }, { name: 'Philadelphia', pop: 6.2e6, sunrise: 4.55 }], // China no DST, USA has DST
-      39: [{ name: 'Washington DC', pop: 6.4e6, sunrise: 4.55 }, { name: 'Ankara', pop: 5.7e6, sunrise: 4.70 }], // USA has DST, Turkey has DST
-      38: [{ name: 'Seoul', pop: 25.5e6, sunrise: 5.07 }, { name: 'San Francisco', pop: 4.7e6, sunrise: 4.70 }, { name: 'Athens', pop: 3.1e6, sunrise: 4.70 }], // Korea no DST, USA has DST, Greece has DST
-      37: [{ name: 'Los Angeles', pop: 12.5e6, sunrise: 4.70 }], // USA has DST
-      36: [{ name: 'Tokyo', pop: 37.3e6, sunrise: 4.43 }], // Japan no DST
-      35: [{ name: 'Tokyo', pop: 37.3e6, sunrise: 4.42 }, { name: 'Las Vegas', pop: 2.3e6, sunrise: 4.38 }], // Japan no DST, Nevada has DST
-      34: [{ name: 'Phoenix', pop: 4.9e6, sunrise: 5.33 }], // Arizona no DST
-      33: [{ name: 'Shanghai', pop: 29.2e6, sunrise: 4.70 }, { name: 'Dallas', pop: 7.6e6, sunrise: 5.32 }, { name: 'Baghdad', pop: 7.2e6, sunrise: 5.17 }], // China no DST, USA has DST, Iraq no DST
-      32: [{ name: 'San Diego', pop: 3.3e6, sunrise: 4.73 }], // USA has DST
-      31: [{ name: 'Shanghai', pop: 29.2e6, sunrise: 4.70 }, { name: 'Cairo', pop: 21.3e6, sunrise: 5.70 }], // China no DST, Egypt no DST
-      30: [{ name: 'Houston', pop: 7.1e6, sunrise: 5.33 }, { name: 'New Orleans', pop: 1.3e6, sunrise: 5.12 }], // Both have DST
-      29: [{ name: 'Delhi', pop: 32.9e6, sunrise: 5.42 }], // India no DST
-      28: [{ name: 'Miami', pop: 6.1e6, sunrise: 5.47 }], // USA has DST
-      26: [{ name: 'Riyadh', pop: 7.7e6, sunrise: 5.70 }], // Saudi Arabia no DST
-      25: [{ name: 'Taipei', pop: 7.0e6, sunrise: 5.12 }], // Taiwan no DST
-      23: [{ name: 'Kolkata', pop: 15.1e6, sunrise: 5.27 }, { name: 'Havana', pop: 2.1e6, sunrise: 5.40 }], // India no DST, Cuba has DST
-      22: [{ name: 'Dhaka', pop: 22.5e6, sunrise: 5.17 }, { name: 'Mumbai', pop: 21.3e6, sunrise: 6.00 }], // Bangladesh no DST, India no DST
-      19: [{ name: 'Mexico City', pop: 22.0e6, sunrise: 5.97 }, { name: 'Manila', pop: 14.7e6, sunrise: 5.47 }], // Mexico no DST, Philippines no DST
-      14: [{ name: 'Bangkok', pop: 17.1e6, sunrise: 5.83 }, { name: 'Manila', pop: 14.7e6, sunrise: 5.47 }], // Thailand no DST, Philippines no DST
-      13: [{ name: 'Bangkok', pop: 17.1e6, sunrise: 5.83 }, { name: 'Lagos', pop: 15.4e6, sunrise: 5.48 }], // Thailand no DST, Nigeria no DST
-      9: [{ name: 'Singapore', pop: 5.9e6, sunrise: 7.12 }], // Singapore no DST
-      7: [{ name: 'Bogotá', pop: 11.5e6, sunrise: 5.67 }], // Colombia no DST
-      5: [{ name: 'Bogotá', pop: 11.5e6, sunrise: 5.67 }], // Colombia no DST
-      1: [{ name: 'Nairobi', pop: 5.1e6, sunrise: 5.70 }], // Kenya no DST
-      0: [{ name: 'Quito', pop: 2.9e6, sunrise: 6.05 }], // Ecuador no DST
-      '-1': [{ name: 'Nairobi', pop: 5.1e6, sunrise: 5.70 }], // Kenya no DST
-      '-6': [{ name: 'Jakarta', pop: 34.5e6, sunrise: 5.42 }], // Indonesia no DST
-      '-8': [{ name: 'Jakarta', pop: 34.5e6, sunrise: 5.42 }], // Indonesia no DST
-      '-12': [{ name: 'Lima', pop: 11.2e6, sunrise: 5.55 }], // Peru no DST
-      '-13': [{ name: 'Lima', pop: 11.2e6, sunrise: 5.55 }], // Peru no DST
-      '-23': [{ name: 'São Paulo', pop: 22.6e6, sunrise: 4.28 }, { name: 'Rio de Janeiro', pop: 13.7e6, sunrise: 4.07 }], // Brazil has DST 2025-2026
-      '-26': [{ name: 'Johannesburg', pop: 10.0e6, sunrise: 6.87 }], // South Africa no DST
-      '-30': [{ name: 'Durban', pop: 3.7e6, sunrise: 6.83 }], // South Africa no DST
-      '-33': [{ name: 'Santiago', pop: 6.8e6, sunrise: 5.50 }, { name: 'Sydney', pop: 5.3e6, sunrise: 4.67 }], // Chile has DST, Australia has DST
-      '-34': [{ name: 'Buenos Aires', pop: 15.6e6, sunrise: 5.77 }, { name: 'Cape Town', pop: 4.7e6, sunrise: 7.75 }], // Argentina no DST, SA no DST
-      '-35': [{ name: 'Melbourne', pop: 5.1e6, sunrise: 4.90 }], // Australia has DST
-      '-37': [{ name: 'Melbourne', pop: 5.1e6, sunrise: 4.90 }], // Australia has DST
-      '-41': [{ name: 'Wellington', pop: 415000, sunrise: 4.72 }], // NZ has DST
-      '-45': [{ name: 'Dunedin', pop: 130000, sunrise: 4.72 }], // NZ has DST
-      '-53': [{ name: 'Punta Arenas', pop: 130000, sunrise: 5.50 }], // Chile has DST
-    };
-    
-    const roundedLat = Math.round(lat);
-    const cities = cityData[roundedLat.toString()];
-    
-    if (!cities) return [];
-    
-    return cities
-      .sort((a, b) => b.pop - a.pop)
-      .slice(0, 3);
+  // Pre-compute hash map from rounded latitude to cities (computed once)
+  const cityByLatitude = useMemo(() => {
+    const map = {};
+    cities.forEach(city => {
+      const roundedLat = Math.round(city.lat);
+      if (!map[roundedLat]) map[roundedLat] = [];
+      map[roundedLat].push(city);
+    });
+    // Sort by population and take top 3 for each latitude
+    Object.keys(map).forEach(lat => {
+      map[lat] = map[lat]
+        .sort((a, b) => b.pop - a.pop)
+        .slice(0, 3)
+        .map(city => ({ name: city.nom, pop: city.pop, sunrise: city.sss }));
+    });
+    return map;
   }, []);
+
+  const getCitiesForLatitude = useCallback((lat) => {
+    const roundedLat = Math.round(lat);
+    return cityByLatitude[roundedLat] || [];
+  }, [cityByLatitude]);
 
   const sleepHours = useMemo(() => {
     return 24 - (bedtime - wakeTime);
@@ -702,6 +727,7 @@ For now, we'll stick with the approximation that SSS is the earliest sunrise of 
 <h3 className="text-lg font-semibold mb-2 text-gray-700">Related reading</h3>
 <ul className="list-disc list-inside space-y-1 text-gray-700 ml-4">
 <li><a href="https://www.lesswrong.com/posts/JrzxrsfbjNTZyZgMW/body-time-and-daylight-savings-apologetics">Body Time and Daylight Savings Apologetics</a></li>
+<li><a href="https://andywoodruff.com/blog/where-to-hate-daylight-saving-time-and-where-to-love-it/">Where to Hate Daylight Saving Time and Where to Love It</a></li>
 </ul>
 </div>
 

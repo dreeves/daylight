@@ -381,9 +381,33 @@ can you go through all the city data and compare to wikipedia or timeanddate and
 (Codebuff takes a while to get its head around the subtlety that determining the SSS time means both finding the local time of day of sunrise on summer solstice for a given city, and then subtracting an hour if that city observes DST on that date. And then it balks hard and says it'll just spot check 5 cities. But when it does so it immediately finds a major error for Sydney, Australia! So I insisted it check all 50 cities.)
 
 _[version 56]_
+
+i just picked buenos aires to spot check and i see a summer solstice sunrise time of 5:37am (5.62) at timeanddate.com. where did you get 5.77?
+
+(It says it "made an arithmetic mistake".)
+
 _[version 57]_
+
+not reassuring! also i see there are a lot of duplicates in the database. can you clean that up? proposal:
+
+  // I think we should refactor this citydata database to be a list with
+  // the following fields: nom, lat, lon, pop, sss, dst.
+  // From that we can compute the hash mapping integer latitude to city name and 
+  // SSS. NB: SSS means Summer Solstice's Sunrise WITHOUT DST and then the dst
+  // field is a boolean saying whether that city observes DST on its summer 
+  // solstice. 
+  // Summer solstice is June ~21 in the northern hemisphere and December ~21 in
+  // the southern hemisphere.
+
 _[version 58]_
+
+(Codebuff wrote up a refactoring plan)
+
+i modified the plan (i said "nom" not "name", for example). proceed.
+
 _[version 59]_
+
+
 
 ## To gissue
 
@@ -399,3 +423,5 @@ cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in pro
 
 I see this in the browser console:
 You are calling ReactDOMClient.createRoot() on a container that has already been passed to createRoot() before. Instead, call root.render() on the existing root instead if you want to update it.
+
+Silly idea: Do this right by having the y-axis start at the Dawnzerly 
