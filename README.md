@@ -368,6 +368,7 @@ _[version 52]_
 
 _[version 53]_
 
+can you do all the standard link preview and SEO stuff?
 
 _[version 54]_
 _[version 55]_
