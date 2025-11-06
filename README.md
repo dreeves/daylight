@@ -371,6 +371,8 @@ _[version 53]_
 can you do all the standard link preview and SEO stuff?
 
 _[version 54]_
+
+
 _[version 55]_
 _[version 56]_
 _[version 57]_
@@ -381,8 +383,6 @@ _[version 59]_
 
 BUG: if wake time is at zero and you check the DST checkbox, it should wrap to the top of the graph rather than increase the y-axis range to start at -1 instead +0. basically everything should be graphed mod 24.
 
-RFE: discoverable tooltips that work on mobile, not just title text.
-
 Codebuff falls on its face on this:
 can we deal with this warning, if it matters?
 cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation
@@ -390,5 +390,3 @@ cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in pro
 
 I see this in the browser console:
 You are calling ReactDOMClient.createRoot() on a container that has already been passed to createRoot() before. Instead, call root.render() on the existing root instead if you want to update it.
-
-all the link preview and SEO stuff
