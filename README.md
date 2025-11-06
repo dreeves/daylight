@@ -349,13 +349,36 @@ _[version 48]_
 _[version 49]_
 
 And at this point Claude reached the maximum conversation length.
+I did some fussing with the webcopy and the text displayed when you hover on the graph.
 
+_[version 50]_
+
+[switching to Codebuff]
+can you look into a shading bug?
+for example when wake time is between +12 and around +15 for 45 degrees latitude: it doesn't shade the full width of the graph.
+
+_[version 51]_
+
+that's sort of better, but there's a little gap, and also it has the same problem for the region below (before) wake time, when the sun never rises
+
+_[version 52]_
+
+ i see no change in behavior :(
+[more back-and-forth with Codebuff ensues and it finally fixes it]
+
+_[version 53]_
+
+
+_[version 54]_
+_[version 55]_
+_[version 56]_
+_[version 57]_
+_[version 58]_
+_[version 59]_
 
 ## To gissue
 
 BUG: if wake time is at zero and you check the DST checkbox, it should wrap to the top of the graph rather than increase the y-axis range to start at -1 instead +0. basically everything should be graphed mod 24.
-
-BUG: shading bug for example when wake time is between +12 and around +15 for 45 degrees latitude: it doesn't shade the full width of the graph.
 
 RFE: discoverable tooltips that work on mobile, not just title text.
 

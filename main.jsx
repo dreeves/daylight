@@ -262,11 +262,20 @@ const DawnDeltaTool = () => {
       const eveningWasteEnd = duskDelta;
       const eveningWaste = (eveningWasteStart < eveningWasteEnd && sleepTime < duskDelta) ? [eveningWasteStart, eveningWasteEnd] : null;
       
-      const darkAsleepMorning = adjustedWakeTime > 0 && dawnDelta > 0 ? [0, Math.min(adjustedWakeTime, dawnDelta)] : null;
-      const darkAsleepEvening = sleepTime < 24 && duskDelta < 24 ? [Math.max(sleepTime, duskDelta), 24] : null;
+      // Handle sleep during darkness (before wake and after sleep)
+      const darkAsleepMorning = adjustedWakeTime > 0 ? [0, Math.min(adjustedWakeTime, dawnDelta ?? adjustedWakeTime)] : null;
+      const darkAsleepEvening = sleepTime < 24 ? [Math.max(sleepTime, duskDelta ?? sleepTime), 24] : null;
       
-      const nightAwakeMorning = (adjustedWakeTime < dawnDelta && dawnDelta < sleepTime) ? [adjustedWakeTime, Math.min(dawnDelta, sleepTime)] : null;
-      const nightAwakeEvening = (adjustedWakeTime < duskDelta && duskDelta < sleepTime) ? [Math.max(duskDelta, adjustedWakeTime), sleepTime] : null;
+      const nightAwakeMorning = (dawnDelta !== null && adjustedWakeTime < dawnDelta && dawnDelta < sleepTime) ? [adjustedWakeTime, dawnDelta] : null;
+      const nightAwakeEvening = (duskDelta !== null && adjustedWakeTime < duskDelta && duskDelta < sleepTime) ? [duskDelta, sleepTime] : null;
+      
+      // Handle cases where person is awake entirely during darkness (no overlap with daylight)
+      // Case 1: Wake after dusk and sleep after dusk (entire wake period in evening darkness)
+      const nightAwakeAfterDusk = (duskDelta !== null && adjustedWakeTime >= duskDelta && sleepTime > duskDelta && adjustedWakeTime < sleepTime) ? [adjustedWakeTime, sleepTime] : null;
+      // Case 2: Wake before dawn and sleep before dawn (entire wake period in morning darkness)
+      const nightAwakeBeforeDawn = (dawnDelta !== null && adjustedWakeTime < dawnDelta && sleepTime <= dawnDelta && adjustedWakeTime < sleepTime) ? [adjustedWakeTime, sleepTime] : null;
+      // Case 3: Polar night (no sunrise/sunset) - entire wake period is in darkness
+      const nightAwakePolarNight = (dawnDelta === null || duskDelta === null) && adjustedWakeTime < sleepTime ? [adjustedWakeTime, sleepTime] : null;
       
       result.push({ 
         day, 
@@ -281,7 +290,10 @@ const DawnDeltaTool = () => {
         darkAsleepMorning,
         darkAsleepEvening,
         nightAwakeMorning,
-        nightAwakeEvening
+        nightAwakeEvening,
+        nightAwakeAfterDusk,
+        nightAwakeBeforeDawn,
+        nightAwakePolarNight
       });
     }
     
@@ -550,6 +562,9 @@ const DawnDeltaTool = () => {
             <Area type="monotone" dataKey="darkAsleepEvening" stroke="none" fill="#7c3aed" fillOpacity={0.5} isAnimationActive={false} />
             <Area type="monotone" dataKey="nightAwakeMorning" stroke="none" fill="#c4b5fd" fillOpacity={0.5} isAnimationActive={false} />
             <Area type="monotone" dataKey="nightAwakeEvening" stroke="none" fill="#c4b5fd" fillOpacity={0.5} isAnimationActive={false} />
+            <Area type="monotone" dataKey="nightAwakeAfterDusk" stroke="none" fill="#c4b5fd" fillOpacity={0.5} isAnimationActive={false} />
+            <Area type="monotone" dataKey="nightAwakeBeforeDawn" stroke="none" fill="#c4b5fd" fillOpacity={0.5} isAnimationActive={false} />
+            <Area type="monotone" dataKey="nightAwakePolarNight" stroke="none" fill="#c4b5fd" fillOpacity={0.5} isAnimationActive={false} />
             <Area type="monotone" dataKey="daylightAwake" stroke="none" fill="#fbbf24" fillOpacity={0.5} isAnimationActive={false} />
             <Area type="monotone" dataKey="morningWaste" stroke="none" fill="#ef4444" fillOpacity={0.5} isAnimationActive={false} />
             <Area type="monotone" dataKey="eveningWaste" stroke="none" fill="#ef4444" fillOpacity={0.5} isAnimationActive={false} />
