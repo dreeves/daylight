@@ -64,8 +64,8 @@ const DawnDeltaTool = () => {
   // This data was collected on 2025-11-06. Cities' populations and whether they
   // observe DST (on their summer solstice) may change.
   const cities = [
-    { nom: 'Reykjavik', lat: 64.14, lon: -21.90, pop: 233034, sss: 2.70, dst: false },
-    { nom: 'Saint Petersburg', lat: 59.94, lon: 30.32, pop: 5.6e6, sss: 3.78, dst: false },
+    { nom: 'Reykjavik', lat: 64.14, lon: -21.90, pop: 249054, sss: 2.70, dst: false },
+    { nom: 'Saint Petersburg', lat: 59.94, lon: 30.32, pop: 6.4e6, sss: 3.78, dst: false },
     { nom: 'Helsinki', lat: 60.17, lon: 24.93, pop: 1.5e6, sss: 2.70, dst: true },
     { nom: 'Oslo', lat: 59.91, lon: 10.75, pop: 1.04e6, sss: 3.70, dst: true },
     { nom: 'Stockholm', lat: 59.33, lon: 18.07, pop: 1.6e6, sss: 2.58, dst: true },
@@ -96,12 +96,12 @@ const DawnDeltaTool = () => {
     { nom: 'Rome', lat: 41.90, lon: 12.50, pop: 4.3e6, sss: 4.50, dst: true },
     { nom: 'Chicago', lat: 41.88, lon: -87.63, pop: 9.6e6, sss: 4.30, dst: true },
     { nom: 'New York', lat: 40.71, lon: -74.01, pop: 19.5e6, sss: 4.42, dst: true },
-    { nom: 'Istanbul', lat: 41.00, lon: 28.97, pop: 15.8e6, sss: 4.70, dst: true },
+    { nom: 'Istanbul', lat: 41.00, lon: 28.97, pop: 15.8e6, sss: 4.70, dst: false },
     { nom: 'Madrid', lat: 40.42, lon: -3.70, pop: 6.7e6, sss: 5.70, dst: true },
     { nom: 'Beijing', lat: 39.90, lon: 116.40, pop: 21.5e6, sss: 5.07, dst: false },
     { nom: 'Philadelphia', lat: 39.95, lon: -75.17, pop: 6.2e6, sss: 4.55, dst: true },
     { nom: 'Washington DC', lat: 38.90, lon: -77.04, pop: 6.4e6, sss: 4.55, dst: true },
-    { nom: 'Ankara', lat: 39.93, lon: 32.86, pop: 5.7e6, sss: 4.70, dst: true },
+    { nom: 'Ankara', lat: 39.93, lon: 32.86, pop: 5.7e6, sss: 4.70, dst: false },
     { nom: 'Seoul', lat: 37.56, lon: 126.98, pop: 25.5e6, sss: 5.07, dst: false },
     { nom: 'San Francisco', lat: 37.77, lon: -122.42, pop: 4.7e6, sss: 4.70, dst: true },
     { nom: 'Athens', lat: 37.98, lon: 23.72, pop: 3.1e6, sss: 4.70, dst: true },
@@ -113,7 +113,7 @@ const DawnDeltaTool = () => {
     { nom: 'San Diego', lat: 32.72, lon: -117.16, pop: 3.3e6, sss: 4.67, dst: true },
     { nom: 'Phoenix', lat: 33.45, lon: -112.07, pop: 4.9e6, sss: 5.30, dst: false },
     { nom: 'Shanghai', lat: 31.23, lon: 121.47, pop: 29.2e6, sss: 4.70, dst: false },
-    { nom: 'Cairo', lat: 30.04, lon: 31.24, pop: 21.3e6, sss: 5.70, dst: false },
+    { nom: 'Cairo', lat: 30.04, lon: 31.24, pop: 21.3e6, sss: 5.12, dst: true },
     { nom: 'Houston', lat: 29.76, lon: -95.37, pop: 7.1e6, sss: 5.33, dst: true },
     { nom: 'New Orleans', lat: 29.95, lon: -90.07, pop: 1.3e6, sss: 5.12, dst: true },
     { nom: 'Delhi', lat: 28.61, lon: 77.21, pop: 32.9e6, sss: 5.42, dst: false },
@@ -135,8 +135,8 @@ const DawnDeltaTool = () => {
     { nom: 'Nairobi', lat: -1.29, lon: 36.82, pop: 5.1e6, sss: 5.70, dst: false },
     { nom: 'Jakarta', lat: -6.21, lon: 106.85, pop: 34.5e6, sss: 5.42, dst: false },
     { nom: 'Lima', lat: -12.04, lon: -77.03, pop: 11.2e6, sss: 5.55, dst: false },
-    { nom: 'São Paulo', lat: -23.55, lon: -46.63, pop: 22.6e6, sss: 4.28, dst: true },
-    { nom: 'Rio de Janeiro', lat: -22.91, lon: -43.20, pop: 13.7e6, sss: 4.07, dst: true },
+    { nom: 'São Paulo', lat: -23.55, lon: -46.63, pop: 22.6e6, sss: 4.28, dst: false },
+    { nom: 'Rio de Janeiro', lat: -22.91, lon: -43.20, pop: 13.7e6, sss: 4.07, dst: false },
     { nom: 'Johannesburg', lat: -26.20, lon: 28.05, pop: 10.0e6, sss: 6.87, dst: false },
     { nom: 'Durban', lat: -29.86, lon: 31.02, pop: 3.7e6, sss: 6.83, dst: false },
     { nom: 'Santiago', lat: -33.45, lon: -70.67, pop: 6.8e6, sss: 5.50, dst: true },
@@ -146,7 +146,7 @@ const DawnDeltaTool = () => {
     { nom: 'Melbourne', lat: -37.81, lon: 144.96, pop: 5.1e6, sss: 4.90, dst: true },
     { nom: 'Wellington', lat: -41.29, lon: 174.78, pop: 415000, sss: 4.72, dst: true },
     { nom: 'Dunedin', lat: -45.87, lon: 170.50, pop: 130000, sss: 4.72, dst: true },
-    { nom: 'Punta Arenas', lat: -53.16, lon: -70.92, pop: 130000, sss: 5.50, dst: true },
+    { nom: 'Punta Arenas', lat: -53.16, lon: -70.92, pop: 130000, sss: 5.50, dst: true }, // maybe this one uses permanent DST?
   ];
 
   // Pre-compute hash map from rounded latitude to cities (computed once)
@@ -653,33 +653,30 @@ const DawnDeltaTool = () => {
 
 <div className="mb-4">
 <p className="text-gray-700">
-There is so much confusion and wrongness in debates about whether Daylight Saving Time is a horrific wrong-headed abomination.
-I wanted to demonstrate that DST does have an upside to counterbalance the downsides.
-It's kind of,
-depending on the latitude of where you live, 
-like teleporting an hour of daylight from 5am when no one wants it to 8pm when... 
-everyone except the kind of people I seem to argue with about this do.
+There's so much talking past each other in debates about whether Daylight Saving Time is a horrific wrong-headed abomination.
+This tool aims to demonstrate that DST does have an upside to counterbalance the downsides &mdash; that daylight is pretty literally saved.
+Depending on your latitude, it's roughly like teleporting an hour of daylight from 5am when no one wants it to 8pm when everyone except the kind of people I seem to argue with about this do.
 </p>
 </div>
 
 <div className="mb-4">
 <h3 className="text-lg font-semibold mb-2 text-gray-700">Sunrise times 🌅</h3>
 <p className="text-gray-700">
-First confusing thing about this tool: 
-the sunrise times shown for cities next to the latitude slider are 
+The first confusing thing about this tool is that the sunrise times shown for cities next to the latitude slider are 
 the local time of sunrise 
 on the summer solstice in each city 
 {dstEnabled ? ' WITH ' : ' WITHOUT '} 
 DST, used as the baseline (+0:00) on the graph.
 Notice how these times of day respect how you checked the DST checkbox, <i>regardless of whether the city actually uses DST</i>.
 The point of this tool is to look at hypothetical scenarios.
+How much daylight does or would DST save?
 </p>
 </div>
 
 <div className="mb-4">
 <h3 className="text-lg font-semibold mb-2 text-gray-700">Crunch crunch crunch</h3>
 <p className="text-gray-700">
-What this is supposedly doing is walking through every day of the year, using the parameters you've picked to add up the total amount of time you spend asleep during daylight hours.
+What this tool is supposedly doing is walking through every day of the year, using the parameters you've picked to add up the total amount of time you spend asleep during daylight hours.
 It does that with and without Daylight Savings Time and shows the difference as DST savings in green 
 (or in red if you've slid the sliders to some nonsensical combination that makes DST cause you to waste <i>more</i> daylight).
 </p>
@@ -690,7 +687,7 @@ I'm not sure how many seconds difference it might make to average over the full 
 </p>
 <p className="text-gray-700">
 <br></br>
-And I say "supposedly" because Claude (Sonnet 4.5) did all the coding and the math.
+And I say "supposedly" because Claude (Sonnet 4.5) and Codebuff did all the coding and the math.
 It all seems plausibly correct, but.
 </p>
 </div>
