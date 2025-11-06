@@ -372,10 +372,13 @@ can you do all the standard link preview and SEO stuff?
 
 _[version 54]_
 
-you see how the cities are shown in parens after the label for the latitude slider? can we also show them in parens after the Wake slider label? and in that case the timesof day shown should be x hours more than in the latitude label, where x is the value of the wake slider
+you see how the cities are shown in parens after the label for the latitude slider? can we also show them in parens after the Wake slider label? and in that case the times of day shown should be x hours more than in the latitude label, where x is the value of the wake slider
 
 _[version 55]_
 
+can you go through all the city data and compare to wikipedia or timeanddate and make sure it's exactly right?
+
+(Codebuff takes a while to get its head around the subtlety that determining the SSS time means both finding the local time of day of sunrise on summer solstice for a given city, and then subtracting an hour if that city observes DST on that date. And then it balks hard and says it'll just spot check 5 cities. But when it does so it immediately finds a major error for Sydney, Australia! So I insisted it check all 50 cities.)
 
 _[version 56]_
 _[version 57]_
@@ -384,12 +387,15 @@ _[version 59]_
 
 ## To gissue
 
+can you add a y-axis label? "Delta from Summer Solstice's Sunrise (SSS)"
+
+link formatting
+
 BUG: if wake time is at zero and you check the DST checkbox, it should wrap to the top of the graph rather than increase the y-axis range to start at -1 instead +0. basically everything should be graphed mod 24.
 
 Codebuff falls on its face on this:
 can we deal with this warning, if it matters?
 cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation
-
 
 I see this in the browser console:
 You are calling ReactDOMClient.createRoot() on a container that has already been passed to createRoot() before. Instead, call root.render() on the existing root instead if you want to update it.

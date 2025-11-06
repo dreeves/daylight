@@ -58,6 +58,17 @@ const DawnDeltaTool = () => {
     return `${months[date.getMonth()]} ${date.getDate()}`;
   }, []);
 
+  // Note from the human (dreev):
+  // I think we should refactor this citydata database to be a list with
+  // the following fields: nom, lat, lon, pop, sss, dst.
+  // From that we can compute the hash from integer latitude to city name and 
+  // SSS. Btw, SSS means Summer Solstice's Sunrise WITHOUT DST and then the dst
+  // field is a boolean saying whether that city observes DST on its summer 
+  // solstice. 
+  // Summer solstice is June ~21 in the northern hemisphere and December ~21 in
+  // the southern hemisphere.
+  // End note from the human.
+
   // Get city names for exact integer latitude
   // Data sources: Wikipedia city coordinates, rounded to nearest degree
   // Population data from 2020-2024 metropolitan area estimates
@@ -66,64 +77,64 @@ const DawnDeltaTool = () => {
     // Northern Hemisphere: June 21, Southern Hemisphere: December 21
     // Times adjusted from displayed DST times where applicable
     const cityData = {
-      64: [{ name: 'Reykjavik', pop: 233034, sunrise: 3.05 }], // Iceland no DST
-      60: [{ name: 'Saint Petersburg', pop: 5.6e6, sunrise: 3.78 }, { name: 'Helsinki', pop: 1.5e6, sunrise: 2.87 }, { name: 'Oslo', pop: 1.04e6, sunrise: 2.95 }], // Russia no DST, Finland/Norway have DST
+      64: [{ name: 'Reykjavik', pop: 233034, sunrise: 2.70 }], // Iceland no DST
+      60: [{ name: 'Saint Petersburg', pop: 5.6e6, sunrise: 3.78 }, { name: 'Helsinki', pop: 1.5e6, sunrise: 2.70 }, { name: 'Oslo', pop: 1.04e6, sunrise: 3.70 }], // Russia no DST, Finland/Norway have DST
       59: [{ name: 'Stockholm', pop: 2.4e6, sunrise: 2.58 }], // Sweden has DST
       56: [{ name: 'Moscow', pop: 21.5e6, sunrise: 3.72 }, { name: 'Copenhagen', pop: 2.1e6, sunrise: 3.25 }], // Russia no DST, Denmark has DST
       55: [{ name: 'Edinburgh', pop: 900000, sunrise: 3.47 }], // UK has DST
       54: [{ name: 'Hamburg', pop: 5.1e6, sunrise: 3.77 }], // Germany has DST
       53: [{ name: 'Dublin', pop: 1.4e6, sunrise: 3.95 }], // Ireland has DST
-      52: [{ name: 'Berlin', pop: 6.1e6, sunrise: 3.78 }, { name: 'Warsaw', pop: 3.1e6, sunrise: 3.38 }, { name: 'Amsterdam', pop: 2.4e6, sunrise: 4.18 }], // All have DST
+      52: [{ name: 'Berlin', pop: 6.1e6, sunrise: 3.70 }, { name: 'Warsaw', pop: 3.1e6, sunrise: 3.70 }, { name: 'Amsterdam', pop: 2.4e6, sunrise: 3.70 }], // All have DST
       51: [{ name: 'London', pop: 14.3e6, sunrise: 3.78 }, { name: 'Calgary', pop: 1.6e6, sunrise: 4.33 }], // Both have DST
-      50: [{ name: 'Frankfurt', pop: 5.9e6, sunrise: 4.18 }, { name: 'Prague', pop: 2.7e6, sunrise: 3.93 }, { name: 'Vancouver', pop: 2.6e6, sunrise: 4.12 }], // All have DST
-      49: [{ name: 'Paris', pop: 11.2e6, sunrise: 4.80 }, { name: 'Munich', pop: 6.1e6, sunrise: 4.15 }], // Both have DST
-      48: [{ name: 'Seattle', pop: 4.0e6, sunrise: 4.20 }, { name: 'Vienna', pop: 2.9e6, sunrise: 3.93 }], // Both have DST
-      46: [{ name: 'Montreal', pop: 4.3e6, sunrise: 4.08 }, { name: 'Portland', pop: 2.5e6, sunrise: 4.37 }], // Both have DST
-      45: [{ name: 'Milan', pop: 7.6e6, sunrise: 4.57 }, { name: 'Minneapolis', pop: 3.7e6, sunrise: 4.43 }], // Both have DST
-      44: [{ name: 'Toronto', pop: 6.4e6, sunrise: 4.60 }], // Canada has DST
+      50: [{ name: 'Frankfurt', pop: 5.9e6, sunrise: 3.70 }, { name: 'Prague', pop: 2.7e6, sunrise: 3.70 }, { name: 'Vancouver', pop: 2.6e6, sunrise: 4.12 }], // All have DST
+      49: [{ name: 'Paris', pop: 11.2e6, sunrise: 3.70 }, { name: 'Munich', pop: 6.1e6, sunrise: 3.70 }], // Both have DST
+      48: [{ name: 'Seattle', pop: 4.0e6, sunrise: 4.18 }, { name: 'Vienna', pop: 2.9e6, sunrise: 3.70 }], // Both have DST
+      46: [{ name: 'Montreal', pop: 4.3e6, sunrise: 4.40 }, { name: 'Portland', pop: 2.5e6, sunrise: 4.43 }], // Both have DST
+      45: [{ name: 'Milan', pop: 7.6e6, sunrise: 4.42 }, { name: 'Minneapolis', pop: 3.7e6, sunrise: 4.28 }], // Both have DST
+      44: [{ name: 'Toronto', pop: 6.4e6, sunrise: 4.50 }], // Canada has DST
       43: [{ name: 'Boston', pop: 4.9e6, sunrise: 4.18 }, { name: 'Marseille', pop: 1.9e6, sunrise: 5.00 }], // Both have DST
       42: [{ name: 'Chicago', pop: 9.6e6, sunrise: 4.30 }, { name: 'Rome', pop: 4.3e6, sunrise: 4.57 }], // Both have DST
-      41: [{ name: 'New York', pop: 19.5e6, sunrise: 4.43 }, { name: 'Istanbul', pop: 15.8e6, sunrise: 5.60 }, { name: 'Madrid', pop: 6.7e6, sunrise: 5.73 }], // NY has DST, Turkey no DST, Spain has DST
-      40: [{ name: 'Beijing', pop: 21.5e6, sunrise: 4.77 }, { name: 'Philadelphia', pop: 6.2e6, sunrise: 4.55 }], // China no DST, USA has DST
-      39: [{ name: 'Washington DC', pop: 6.4e6, sunrise: 4.75 }, { name: 'Ankara', pop: 5.7e6, sunrise: 5.70 }], // USA has DST, Turkey no DST
-      38: [{ name: 'Seoul', pop: 25.5e6, sunrise: 5.12 }, { name: 'San Francisco', pop: 4.7e6, sunrise: 4.80 }, { name: 'Athens', pop: 3.1e6, sunrise: 5.00 }], // Korea no DST, USA has DST, Greece has DST
+      41: [{ name: 'New York', pop: 19.5e6, sunrise: 4.42 }, { name: 'Istanbul', pop: 15.8e6, sunrise: 4.70 }, { name: 'Madrid', pop: 6.7e6, sunrise: 5.70 }], // NY has DST, Turkey has DST, Spain has DST
+      40: [{ name: 'Beijing', pop: 21.5e6, sunrise: 5.07 }, { name: 'Philadelphia', pop: 6.2e6, sunrise: 4.55 }], // China no DST, USA has DST
+      39: [{ name: 'Washington DC', pop: 6.4e6, sunrise: 4.55 }, { name: 'Ankara', pop: 5.7e6, sunrise: 4.70 }], // USA has DST, Turkey has DST
+      38: [{ name: 'Seoul', pop: 25.5e6, sunrise: 5.07 }, { name: 'San Francisco', pop: 4.7e6, sunrise: 4.70 }, { name: 'Athens', pop: 3.1e6, sunrise: 4.70 }], // Korea no DST, USA has DST, Greece has DST
       37: [{ name: 'Los Angeles', pop: 12.5e6, sunrise: 4.70 }], // USA has DST
       36: [{ name: 'Tokyo', pop: 37.3e6, sunrise: 4.43 }], // Japan no DST
-      35: [{ name: 'Tokyo', pop: 37.3e6, sunrise: 4.43 }, { name: 'Las Vegas', pop: 2.3e6, sunrise: 4.47 }], // Japan no DST, Nevada has DST
+      35: [{ name: 'Tokyo', pop: 37.3e6, sunrise: 4.42 }, { name: 'Las Vegas', pop: 2.3e6, sunrise: 4.38 }], // Japan no DST, Nevada has DST
       34: [{ name: 'Phoenix', pop: 4.9e6, sunrise: 5.33 }], // Arizona no DST
-      33: [{ name: 'Shanghai', pop: 29.2e6, sunrise: 4.85 }, { name: 'Dallas', pop: 7.6e6, sunrise: 5.27 }, { name: 'Baghdad', pop: 7.2e6, sunrise: 5.17 }], // China no DST, USA has DST, Iraq no DST
+      33: [{ name: 'Shanghai', pop: 29.2e6, sunrise: 4.70 }, { name: 'Dallas', pop: 7.6e6, sunrise: 5.32 }, { name: 'Baghdad', pop: 7.2e6, sunrise: 5.17 }], // China no DST, USA has DST, Iraq no DST
       32: [{ name: 'San Diego', pop: 3.3e6, sunrise: 4.73 }], // USA has DST
-      31: [{ name: 'Shanghai', pop: 29.2e6, sunrise: 4.85 }, { name: 'Cairo', pop: 21.3e6, sunrise: 4.93 }], // China no DST, Egypt no DST
-      30: [{ name: 'Houston', pop: 7.1e6, sunrise: 5.35 }, { name: 'New Orleans', pop: 1.3e6, sunrise: 5.25 }], // Both have DST
+      31: [{ name: 'Shanghai', pop: 29.2e6, sunrise: 4.70 }, { name: 'Cairo', pop: 21.3e6, sunrise: 5.70 }], // China no DST, Egypt no DST
+      30: [{ name: 'Houston', pop: 7.1e6, sunrise: 5.33 }, { name: 'New Orleans', pop: 1.3e6, sunrise: 5.12 }], // Both have DST
       29: [{ name: 'Delhi', pop: 32.9e6, sunrise: 5.42 }], // India no DST
       28: [{ name: 'Miami', pop: 6.1e6, sunrise: 5.47 }], // USA has DST
-      26: [{ name: 'Riyadh', pop: 7.7e6, sunrise: 5.40 }], // Saudi Arabia no DST
+      26: [{ name: 'Riyadh', pop: 7.7e6, sunrise: 5.70 }], // Saudi Arabia no DST
       25: [{ name: 'Taipei', pop: 7.0e6, sunrise: 5.12 }], // Taiwan no DST
-      23: [{ name: 'Kolkata', pop: 15.1e6, sunrise: 4.93 }, { name: 'Havana', pop: 2.1e6, sunrise: 5.60 }], // India no DST, Cuba has DST
+      23: [{ name: 'Kolkata', pop: 15.1e6, sunrise: 5.27 }, { name: 'Havana', pop: 2.1e6, sunrise: 5.40 }], // India no DST, Cuba has DST
       22: [{ name: 'Dhaka', pop: 22.5e6, sunrise: 5.17 }, { name: 'Mumbai', pop: 21.3e6, sunrise: 6.00 }], // Bangladesh no DST, India no DST
-      19: [{ name: 'Mexico City', pop: 22.0e6, sunrise: 7.00 }, { name: 'Manila', pop: 14.7e6, sunrise: 5.50 }], // Mexico no DST, Philippines no DST
-      14: [{ name: 'Bangkok', pop: 17.1e6, sunrise: 5.87 }, { name: 'Manila', pop: 14.7e6, sunrise: 5.50 }], // Thailand no DST, Philippines no DST
-      13: [{ name: 'Bangkok', pop: 17.1e6, sunrise: 5.87 }, { name: 'Lagos', pop: 15.4e6, sunrise: 6.50 }], // Thailand no DST, Nigeria no DST
-      9: [{ name: 'Singapore', pop: 5.9e6, sunrise: 7.00 }], // Singapore no DST
-      7: [{ name: 'Bogotá', pop: 11.5e6, sunrise: 5.75 }], // Colombia no DST
-      5: [{ name: 'Bogotá', pop: 11.5e6, sunrise: 5.75 }], // Colombia no DST
-      1: [{ name: 'Nairobi', pop: 5.1e6, sunrise: 6.53 }], // Kenya no DST
-      0: [{ name: 'Quito', pop: 2.9e6, sunrise: 6.25 }], // Ecuador no DST
-      '-1': [{ name: 'Nairobi', pop: 5.1e6, sunrise: 6.53 }], // Kenya no DST
-      '-6': [{ name: 'Jakarta', pop: 34.5e6, sunrise: 6.00 }], // Indonesia no DST
-      '-8': [{ name: 'Jakarta', pop: 34.5e6, sunrise: 6.00 }], // Indonesia no DST
-      '-12': [{ name: 'Lima', pop: 11.2e6, sunrise: 6.78 }], // Peru no DST
-      '-13': [{ name: 'Lima', pop: 11.2e6, sunrise: 6.78 }], // Peru no DST
-      '-23': [{ name: 'São Paulo', pop: 22.6e6, sunrise: 6.93 }, { name: 'Rio de Janeiro', pop: 13.7e6, sunrise: 7.05 }], // Brazil stopped DST in 2019
+      19: [{ name: 'Mexico City', pop: 22.0e6, sunrise: 5.97 }, { name: 'Manila', pop: 14.7e6, sunrise: 5.47 }], // Mexico no DST, Philippines no DST
+      14: [{ name: 'Bangkok', pop: 17.1e6, sunrise: 5.83 }, { name: 'Manila', pop: 14.7e6, sunrise: 5.47 }], // Thailand no DST, Philippines no DST
+      13: [{ name: 'Bangkok', pop: 17.1e6, sunrise: 5.83 }, { name: 'Lagos', pop: 15.4e6, sunrise: 5.48 }], // Thailand no DST, Nigeria no DST
+      9: [{ name: 'Singapore', pop: 5.9e6, sunrise: 7.12 }], // Singapore no DST
+      7: [{ name: 'Bogotá', pop: 11.5e6, sunrise: 5.67 }], // Colombia no DST
+      5: [{ name: 'Bogotá', pop: 11.5e6, sunrise: 5.67 }], // Colombia no DST
+      1: [{ name: 'Nairobi', pop: 5.1e6, sunrise: 5.70 }], // Kenya no DST
+      0: [{ name: 'Quito', pop: 2.9e6, sunrise: 6.05 }], // Ecuador no DST
+      '-1': [{ name: 'Nairobi', pop: 5.1e6, sunrise: 5.70 }], // Kenya no DST
+      '-6': [{ name: 'Jakarta', pop: 34.5e6, sunrise: 5.42 }], // Indonesia no DST
+      '-8': [{ name: 'Jakarta', pop: 34.5e6, sunrise: 5.42 }], // Indonesia no DST
+      '-12': [{ name: 'Lima', pop: 11.2e6, sunrise: 5.55 }], // Peru no DST
+      '-13': [{ name: 'Lima', pop: 11.2e6, sunrise: 5.55 }], // Peru no DST
+      '-23': [{ name: 'São Paulo', pop: 22.6e6, sunrise: 4.28 }, { name: 'Rio de Janeiro', pop: 13.7e6, sunrise: 4.07 }], // Brazil has DST 2025-2026
       '-26': [{ name: 'Johannesburg', pop: 10.0e6, sunrise: 6.87 }], // South Africa no DST
       '-30': [{ name: 'Durban', pop: 3.7e6, sunrise: 6.83 }], // South Africa no DST
-      '-33': [{ name: 'Santiago', pop: 6.8e6, sunrise: 8.03 }, { name: 'Sydney', pop: 5.3e6, sunrise: 6.02 }], // Chile stopped DST 2019, Australia has DST
-      '-34': [{ name: 'Buenos Aires', pop: 15.6e6, sunrise: 8.05 }, { name: 'Cape Town', pop: 4.7e6, sunrise: 7.75 }], // Argentina stopped DST 2009, SA no DST
-      '-35': [{ name: 'Melbourne', pop: 5.1e6, sunrise: 6.57 }], // Australia has DST
-      '-37': [{ name: 'Melbourne', pop: 5.1e6, sunrise: 6.57 }], // Australia has DST
-      '-41': [{ name: 'Wellington', pop: 415000, sunrise: 6.82 }], // NZ has DST
-      '-45': [{ name: 'Dunedin', pop: 130000, sunrise: 7.15 }], // NZ has DST
-      '-53': [{ name: 'Punta Arenas', pop: 130000, sunrise: 8.77 }], // Chile stopped DST 2019
+      '-33': [{ name: 'Santiago', pop: 6.8e6, sunrise: 5.50 }, { name: 'Sydney', pop: 5.3e6, sunrise: 4.67 }], // Chile has DST, Australia has DST
+      '-34': [{ name: 'Buenos Aires', pop: 15.6e6, sunrise: 5.77 }, { name: 'Cape Town', pop: 4.7e6, sunrise: 7.75 }], // Argentina no DST, SA no DST
+      '-35': [{ name: 'Melbourne', pop: 5.1e6, sunrise: 4.90 }], // Australia has DST
+      '-37': [{ name: 'Melbourne', pop: 5.1e6, sunrise: 4.90 }], // Australia has DST
+      '-41': [{ name: 'Wellington', pop: 415000, sunrise: 4.72 }], // NZ has DST
+      '-45': [{ name: 'Dunedin', pop: 130000, sunrise: 4.72 }], // NZ has DST
+      '-53': [{ name: 'Punta Arenas', pop: 130000, sunrise: 5.50 }], // Chile has DST
     };
     
     const roundedLat = Math.round(lat);
@@ -648,10 +659,12 @@ It does that with and without Daylight Savings Time and shows the difference as 
 (or in red if you've slid the sliders to some nonsensical combination that makes DST cause you to waste <i>more</i> daylight).
 </p>
 <p className="text-gray-700">
+<br></br>
 For sheer persnickitude it even does that for both leap and non-leap years and computes a 25/75 weighted average.
 I'm not sure how many seconds difference it might make to average over the full 400-year Gregorian cycle.
 </p>
 <p className="text-gray-700">
+<br></br>
 And I say "supposedly" because Claude (Sonnet 4.5) did all the coding and the math.
 It all seems plausibly correct, but.
 </p>
@@ -670,6 +683,20 @@ GPT-5-Thinking derived these, 🤞:
 <li>The last [day-of-week] averages to day <strong>L−3</strong>, where L is the month length (using 28.2425 for February, averaging over the whole 400-year cycle of the Gregorian calendar).</li>
 </ul>
 </div>
+
+<div className="mb-4">
+<h3 className="text-lg font-semibold mb-2 text-gray-700">Even more technical note on Summer Solstice's Sunrise (SSS)</h3>
+<p className="text-gray-700 mb-2">
+Even though summer solstice is the longest day of the year, that doesn't mean it has the earliest sunrise time.
+The reason has to do with solar noon drifting, and, y'know what, this really doesn't matter.
+GPT-5, which I'm choosing to believe, is saying the difference is 2-5 minutes for typical mid-latitude cities.
+(I spot-checked that for Sydney, Australia -- 3 minutes.)
+And I guess at worst 15-17 minutes near the equator? 
+But none of this matters near the equator.
+For now, we'll stick with the approximation that SSS is the earliest sunrise of the year.
+</p>
+</div>
+
 
 <div className="mb-4">
 <h3 className="text-lg font-semibold mb-2 text-gray-700">Related reading</h3>
