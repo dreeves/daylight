@@ -353,18 +353,47 @@ const DawnDeltaTool = () => {
   const CustomTooltip = useCallback(({ active, payload }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
+      const date = new Date(2024, 0, data.day);
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const monthDay = `${months[date.getMonth()]} ${date.getDate()}`;
+      
+      // Calculate daylight and night hours
+      const daylightHours = Math.max(0, data.duskDelta - data.dawnDelta);
+      const nightHours = 24 - daylightHours;
+      
+      // Calculate sleep during night and day
+      const awakeHours = data.sleepTime - data.wakeTime;
+      const sleepHours = 24 - awakeHours;
+      
+      // Sleep during night (before sunrise and after sunset)
+      const sleepBeforeDawn = Math.max(0, Math.min(data.wakeTime, data.dawnDelta));
+      const sleepAfterDusk = Math.max(0, Math.min(24 - data.sleepTime, 24 - data.duskDelta));
+      const sleepDuringNight = sleepBeforeDawn + sleepAfterDusk;
+      
+      // Sleep during day (wasted daylight)
+      const sleepDuringDay = sleepHours - sleepDuringNight;
+      
+      const wasteColor = sleepDuringDay > 0 ? 'text-red-600' : 'text-green-600';
+
+      // leaving the following out for now:
+      /*
+      <p className="text-sm">Sunset @ {formatTimeDelta(data.duskDelta)}</p>
+      <p className="text-sm">Wake @ {formatTimeDelta(data.wakeTime)}</p>
+      <p className="text-sm">Bedtime @ {formatTimeDelta(data.sleepTime)}</p>
+      */
+
       return (
         <div className="bg-white p-3 border border-gray-300 rounded shadow-lg">
-          <p className="font-semibold">{data.monthDay}</p>
-          <p className="text-sm">Dawn: {formatTimeDelta(data.dawnDelta)}</p>
-          <p className="text-sm">Dusk: {formatTimeDelta(data.duskDelta)}</p>
-          <p className="text-sm">Wake: {formatTimeDelta(data.wakeTime)}</p>
-          <p className="text-sm">Sleep: {formatTimeDelta(data.sleepTime)}</p>
+          <p className="font-semibold mb-2">{monthDay}</p>
+          <p className="text-sm">🌅 @ {formatTimeDelta(data.dawnDelta)}</p>
+          <p className="text-sm mt-1">☀️ / 🌙: {formatHours(daylightHours)} / {formatHours(nightHours)}</p>
+          <p>&nbsp;</p>
+          <p className="text-sm">💤: {formatHours(sleepDuringNight)} 🌙 + <span className={wasteColor}>{formatHours(sleepDuringDay)}</span> ☀️</p>
         </div>
       );
     }
     return null;
-  }, [formatTimeDelta]);
+  }, [formatTimeDelta, formatHours]);
 
   const formatYAxis = useCallback((value) => {
     const hours = Math.floor(value);
@@ -410,7 +439,7 @@ const DawnDeltaTool = () => {
 
         <div className="mb-4">
           <label className="block text-lg font-semibold mb-2 text-gray-700">
-            Wake time: {formatTimeDelta(wakeTime)} from summer dawn
+            Wake time: {formatTimeDelta(wakeTime)} from summer solstice's sunrise
           </label>
           <input
             type="range"
@@ -431,7 +460,7 @@ const DawnDeltaTool = () => {
 
         <div className="mb-4">
           <label className="block text-lg font-semibold mb-2 text-gray-700">
-            Bedtime: {formatTimeDelta(bedtime)} ({formatHours(sleepHours)} of sleep)
+            Bedtime: {formatTimeDelta(bedtime)} (💤 {formatHours(sleepHours)})
           </label>
           <input
             type="range"
@@ -490,11 +519,11 @@ const DawnDeltaTool = () => {
         <div className="bg-blue-50 p-4 rounded-lg">
           <p className="text-lg font-semibold text-gray-700 flex items-center">
             <span className="inline-block w-4 h-4 bg-red-500 bg-opacity-50 rounded mr-2"></span>
-            Wasted daylight: {Math.round(wastedDaylight)} hours/year <span className="text-sm font-normal text-gray-600 ml-1"> ({formatHoursPerDay(wastedDaylight / 365.25)})</span>
+            Wasted daylight (💤&nbsp;∩&nbsp;☀️): <span className={`ml-1 ${wastedDaylight > 0 ? 'text-red-600' : 'text-green-600'}`}>{Math.round(wastedDaylight)}</span>{' '}&nbsp;hours/year <span className="text-sm font-normal text-gray-600 ml-1"> ({formatHoursPerDay(wastedDaylight / 365.25)})</span>
           </p>
           <p className="text-lg font-semibold text-gray-700 mt-2 flex items-center">
-            <span className="mr-2">✓</span>
-            DST savings: {formatHoursWithSign(dstSavings)} <span className="text-sm font-normal text-gray-600 ml-1"> ({formatHoursPerDay(dstSavings / 365.25)})</span>
+            <span className="mr-2">🏦</span>
+            DST savings: <span className={`ml-1 ${dstSavings > 0 ? 'text-green-600' : 'text-red-600'}`}>{formatHoursWithSign(dstSavings)}</span> <span className="text-sm font-normal text-gray-600 ml-1"> ({formatHoursPerDay(dstSavings / 365.25)})</span>
           </p>
         </div>
       </div>
@@ -532,25 +561,73 @@ const DawnDeltaTool = () => {
       </div>
 
       <div className="bg-white p-6 rounded-lg shadow mt-6">
-        <h2 className="text-xl font-bold mb-4 text-gray-800">Help</h2>
-        
-        <div className="mb-4">
-          <h3 className="text-lg font-semibold mb-2 text-gray-700">Sunrise times (🌅)</h3>
-          <p className="text-gray-700">
-            Local time of dawn on the summer solstice in each city {dstEnabled ? 'with' : 'without'} DST, used as the baseline (+0:00) on the graph.
-          </p>
-        </div>
+        <h2 className="text-xl font-bold mb-4 text-gray-800">Exposition</h2>
 
-        <div className="mb-4">
-          <h3 className="text-lg font-semibold mb-2 text-gray-700">DST start/end dates</h3>
-          <p className="text-gray-700 mb-2">
-            <strong>Note from Claude (the AI assistant that built this tool):</strong> DST rules like "last Sunday in March" are converted to average dates over the 400-year Gregorian cycle. The formulas used were derived by GPT-5-Thinking:
-          </p>
-          <ul className="list-disc list-inside space-y-1 text-gray-700 ml-4">
-            <li>The kth [day-of-week] of a month averages to day <strong>7k−3</strong></li>
-            <li>The last [day-of-week] averages to day <strong>L−3</strong>, where L is the month length (28.2425 for February)</li>
-          </ul>
-        </div>
+
+<div className="mb-4">
+<p className="text-gray-700">
+There is so much confusion and wrongness in debates about whether Daylight Saving Time is a horrific wrong-headed abomination.
+I wanted to demonstrate that DST does have an upside to counterbalance the downsides.
+It's kind of,
+depending on the latitude of where you live, 
+like teleporting an hour of daylight from 5am when no one wants it to 8pm when... 
+everyone except the kind of people I seem to argue with about this do.
+</p>
+</div>
+
+<div className="mb-4">
+<h3 className="text-lg font-semibold mb-2 text-gray-700">Sunrise times 🌅</h3>
+<p className="text-gray-700">
+First confusing thing about this tool: 
+the sunrise times shown for cities next to the latitude slider are 
+the local time of sunrise 
+on the summer solstice in each city 
+{dstEnabled ? ' WITH ' : ' WITHOUT '} 
+DST, used as the baseline (+0:00) on the graph.
+Notice how these times of day respect how you checked the DST checkbox, <i>regardless of whether the city actually uses DST</i>.
+The point of this tool is to look at hypothetical scenarios.
+</p>
+</div>
+
+<div className="mb-4">
+<h3 className="text-lg font-semibold mb-2 text-gray-700">Crunch crunch crunch</h3>
+<p className="text-gray-700">
+What this is supposedly doing is walking through every day of the year, using the parameters you've picked to add up the total amount of time you spend asleep during daylight hours.
+It does that with and without Daylight Savings Time and shows the difference as DST savings in green 
+(or in red if you've slid the sliders to some nonsensical combination that makes DST cause you to waste <i>more</i> daylight).
+</p>
+<p className="text-gray-700">
+For sheer persnickitude it even does that for both leap and non-leap years and computes a 25/75 weighted average.
+I'm not sure how many seconds difference it might make to average over the full 400-year Gregorian cycle.
+</p>
+<p className="text-gray-700">
+And I say "supposedly" because Claude (Sonnet 4.5) did all the coding and the math.
+It all seems plausibly correct, but.
+</p>
+</div>
+
+<div className="mb-4">
+<h3 className="text-lg font-semibold mb-2 text-gray-700">Technical note on DST start/end dates</h3>
+<p className="text-gray-700 mb-2">
+You definitely don't have to care about this but
+DST rules like "last Sunday in March" are converted to average dates over the 400-year Gregorian cycle. 
+GPT-5-Thinking derived these, 🤞:
+</p>
+<ul className="list-disc list-inside space-y-1 text-gray-700 ml-4">
+<li>The kth [day-of-week] of a month averages to day <strong>7k−3</strong></li>
+<li>(When k=1 that's just 4 which makes sense because the first Saturday, say, is equally likely to fall on the 1st through 7th of the month and the average of 1-7 is 4.)</li>
+<li>The last [day-of-week] averages to day <strong>L−3</strong>, where L is the month length (using 28.2425 for February, averaging over the whole 400-year cycle of the Gregorian calendar).</li>
+</ul>
+</div>
+
+<div className="mb-4">
+<h3 className="text-lg font-semibold mb-2 text-gray-700">Related reading</h3>
+<ul className="list-disc list-inside space-y-1 text-gray-700 ml-4">
+<li><a href="https://www.lesswrong.com/posts/JrzxrsfbjNTZyZgMW/body-time-and-daylight-savings-apologetics">Body Time and Daylight Savings Apologetics</a></li>
+</ul>
+</div>
+
+
       </div>
     </div>
   );
