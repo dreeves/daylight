@@ -422,16 +422,15 @@ it's probably not too far off now.
 
 ## Scratch Notes and things to maybe add gissues about
 
-BUG/RFE: link formatting
-
-BUG: if wake time is at zero and you check the DST checkbox, it should wrap to the top of the graph rather than increase the y-axis range to start at -1 instead +0. basically everything should be graphed mod 24.
+If wake time is at zero and you check the DST checkbox, it should wrap to the top of the graph rather than increase the y-axis range to start at -1 instead +0. 
+Basically everything should be graphed mod 24.
 
 Codebuff falls on its face on this:  
-can we deal with this warning, if it matters?  
+Can we deal with this warning, if it matters?  
 > cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI...
 
-Idea: Do this more exactly right by having the y-axis start at the Dawnzerly Light time, as Ramona Quimby would say. 
+Idea: Do this more exactly correctly by having the y-axis start at the Dawnzerly Light time, as Ramona Quimby would say. 
 I.e., make the baseline for the y-axis be the earliest crack of dawn of the year, which can be a fair bit earlier than Summer Solstice's Sunrise.
-To really go overboard, we could say that twilight and daybreak -- the time when it's quasi-light just before sunrise and just after sunset -- is partially wasted if slept through.
+To really go overboard, we could say that twilight and daybreak -- the times when it's quasi-light just before sunrise and just after sunset -- is partially wasted if slept through.
 We could either parameterize that with another slider or use the actual fractional luminescence or whatever.
-It's infinite fractal rabbit holes forever.
+Yes, it's infinite fractal rabbit holes forever.

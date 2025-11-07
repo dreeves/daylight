@@ -1,0 +1,60 @@
+/* Exposition section styling */
+.exposition {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+  margin-top: 1.5rem;
+}
+
+.exposition h2 {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #1f2937;
+}
+
+.exposition h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #374151;
+}
+
+.exposition p {
+  color: #374151;
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+.exposition .section {
+  margin-bottom: 1rem;
+}
+
+.exposition ul {
+  list-style-type: disc;
+  list-style-position: inside;
+  margin-left: 1rem;
+  color: #374151;
+}
+
+.exposition ul li {
+  margin-bottom: 0.25rem;
+}
+
+.exposition a {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+.exposition a:hover {
+  color: #1d4ed8;
+}
+
+.exposition strong {
+  font-weight: 600;
+}
+
+.exposition i {
+  font-style: italic;
+}

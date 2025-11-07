@@ -668,87 +668,84 @@ const DawnDeltaTool = () => {
         </ResponsiveContainer>
       </div>
 
-      <div className="bg-white p-6 rounded-lg shadow mt-6">
-        <h2 className="text-xl font-bold mb-4 text-gray-800">Exposition</h2>
+      <div className="exposition">
+        <h2>Exposition</h2>
 
+        <div className="section">
+          <p>
+            There's so much talking past each other in debates about whether Daylight Saving Time is a horrific wrong-headed abomination.
+            This tool aims to demonstrate that DST does have an upside to counterbalance the downsides &mdash; that daylight is pretty literally saved.
+            Depending on your latitude, it's roughly like teleporting an hour of daylight from 5am when no one wants it to 8pm when everyone except the kind of people I seem to argue with about this do.
+          </p>
+        </div>
 
-<div className="mb-4">
-<p className="text-gray-700">
-There's so much talking past each other in debates about whether Daylight Saving Time is a horrific wrong-headed abomination.
-This tool aims to demonstrate that DST does have an upside to counterbalance the downsides &mdash; that daylight is pretty literally saved.
-Depending on your latitude, it's roughly like teleporting an hour of daylight from 5am when no one wants it to 8pm when everyone except the kind of people I seem to argue with about this do.
-</p>
-</div>
+        <div className="section">
+          <h3>Sunrise times 🌅</h3>
+          <p>
+            The first confusing thing about this tool is that the sunrise times shown for cities next to the latitude slider are
+            the local time of sunrise
+            on the summer solstice in each city
+            {dstEnabled ? ' WITH ' : ' WITHOUT '}
+            DST, used as the baseline (+0:00) on the graph.
+            Notice how these times of day respect how you checked the DST checkbox, <i>regardless of whether the city actually uses DST</i>.
+            The point of this tool is to look at hypothetical scenarios.
+            How much daylight does or would DST save?
+          </p>
+        </div>
 
-<div className="mb-4">
-<h3 className="text-lg font-semibold mb-2 text-gray-700">Sunrise times 🌅</h3>
-<p className="text-gray-700">
-The first confusing thing about this tool is that the sunrise times shown for cities next to the latitude slider are 
-the local time of sunrise 
-on the summer solstice in each city 
-{dstEnabled ? ' WITH ' : ' WITHOUT '} 
-DST, used as the baseline (+0:00) on the graph.
-Notice how these times of day respect how you checked the DST checkbox, <i>regardless of whether the city actually uses DST</i>.
-The point of this tool is to look at hypothetical scenarios.
-How much daylight does or would DST save?
-</p>
-</div>
+        <div className="section">
+          <h3>Crunch crunch crunch</h3>
+          <p>
+            What this tool is supposedly doing is walking through every day of the year, using the parameters you've picked to add up the total amount of time you spend asleep during daylight hours.
+            It does that with and without Daylight Savings Time and shows the difference as DST savings in green
+            (or in red if you've slid the sliders to some nonsensical combination that makes DST cause you to waste <i>more</i> daylight).
+          </p>
+          <p>
+            <br />
+            For sheer persnickitude it even does that for both leap and non-leap years and computes a 25/75 weighted average.
+            I'm not sure how many seconds difference it might make to average over the full 400-year Gregorian cycle.
+          </p>
+          <p>
+            <br />
+            And I say "supposedly" because Claude (Sonnet 4.5) and Codebuff did all the coding and the math.
+            It all seems plausibly correct, but.
+          </p>
+        </div>
 
-<div className="mb-4">
-<h3 className="text-lg font-semibold mb-2 text-gray-700">Crunch crunch crunch</h3>
-<p className="text-gray-700">
-What this tool is supposedly doing is walking through every day of the year, using the parameters you've picked to add up the total amount of time you spend asleep during daylight hours.
-It does that with and without Daylight Savings Time and shows the difference as DST savings in green 
-(or in red if you've slid the sliders to some nonsensical combination that makes DST cause you to waste <i>more</i> daylight).
-</p>
-<p className="text-gray-700">
-<br></br>
-For sheer persnickitude it even does that for both leap and non-leap years and computes a 25/75 weighted average.
-I'm not sure how many seconds difference it might make to average over the full 400-year Gregorian cycle.
-</p>
-<p className="text-gray-700">
-<br></br>
-And I say "supposedly" because Claude (Sonnet 4.5) and Codebuff did all the coding and the math.
-It all seems plausibly correct, but.
-</p>
-</div>
+        <div className="section">
+          <h3>Technical note on DST start/end dates</h3>
+          <p>
+            You definitely don't have to care about this but
+            DST rules like "last Sunday in March" are converted to average dates over the 400-year Gregorian cycle.
+            GPT-5-Thinking derived these, 🤞:
+          </p>
+          <ul>
+            <li>The kth [day-of-week] of a month averages to day <strong>7k−3</strong></li>
+            <li>(When k=1 that's just 4 which makes sense because the first Saturday, say, is equally likely to fall on the 1st through 7th of the month and the average of 1-7 is 4.)</li>
+            <li>The last [day-of-week] averages to day <strong>L−3</strong>, where L is the month length (using 28.2425 for February, averaging over the whole 400-year cycle of the Gregorian calendar).</li>
+          </ul>
+        </div>
 
-<div className="mb-4">
-<h3 className="text-lg font-semibold mb-2 text-gray-700">Technical note on DST start/end dates</h3>
-<p className="text-gray-700 mb-2">
-You definitely don't have to care about this but
-DST rules like "last Sunday in March" are converted to average dates over the 400-year Gregorian cycle. 
-GPT-5-Thinking derived these, 🤞:
-</p>
-<ul className="list-disc list-inside space-y-1 text-gray-700 ml-4">
-<li>The kth [day-of-week] of a month averages to day <strong>7k−3</strong></li>
-<li>(When k=1 that's just 4 which makes sense because the first Saturday, say, is equally likely to fall on the 1st through 7th of the month and the average of 1-7 is 4.)</li>
-<li>The last [day-of-week] averages to day <strong>L−3</strong>, where L is the month length (using 28.2425 for February, averaging over the whole 400-year cycle of the Gregorian calendar).</li>
-</ul>
-</div>
+        <div className="section">
+          <h3>Even more technical note on Summer Solstice's Sunrise (SSS)</h3>
+          <p>
+            Even though summer solstice is the longest day of the year, that doesn't mean it has the earliest sunrise time.
+            The reason has to do with solar noon drifting, and, y'know what, this really doesn't matter.
+            GPT-5, which I'm choosing to believe, is saying the difference is 2-5 minutes for typical mid-latitude cities.
+            (I spot-checked that for Sydney, Australia -- 3 minutes.)
+            And I guess at worst 15-17 minutes near the equator?
+            But none of this matters near the equator.
+            For now, we'll stick with the approximation that SSS is the earliest sunrise of the year.
+          </p>
+        </div>
 
-<div className="mb-4">
-<h3 className="text-lg font-semibold mb-2 text-gray-700">Even more technical note on Summer Solstice's Sunrise (SSS)</h3>
-<p className="text-gray-700 mb-2">
-Even though summer solstice is the longest day of the year, that doesn't mean it has the earliest sunrise time.
-The reason has to do with solar noon drifting, and, y'know what, this really doesn't matter.
-GPT-5, which I'm choosing to believe, is saying the difference is 2-5 minutes for typical mid-latitude cities.
-(I spot-checked that for Sydney, Australia -- 3 minutes.)
-And I guess at worst 15-17 minutes near the equator? 
-But none of this matters near the equator.
-For now, we'll stick with the approximation that SSS is the earliest sunrise of the year.
-</p>
-</div>
-
-
-<div className="mb-4">
-<h3 className="text-lg font-semibold mb-2 text-gray-700">Related reading</h3>
-<ul className="list-disc list-inside space-y-1 text-gray-700 ml-4">
-<li><a href="https://www.lesswrong.com/posts/JrzxrsfbjNTZyZgMW/body-time-and-daylight-savings-apologetics">Body Time and Daylight Savings Apologetics</a></li>
-<li><a href="https://andywoodruff.com/blog/where-to-hate-daylight-saving-time-and-where-to-love-it/">Where to Hate Daylight Saving Time and Where to Love It</a></li>
-</ul>
-</div>
-
+        <div className="section">
+          <h3>Related reading</h3>
+          <ul>
+            <li><a href="https://www.lesswrong.com/posts/JrzxrsfbjNTZyZgMW/body-time-and-daylight-savings-apologetics">Body Time and Daylight Savings Apologetics</a></li>
+            <li><a href="https://andywoodruff.com/blog/where-to-hate-daylight-saving-time-and-where-to-love-it/">Where to Hate Daylight Saving Time and Where to Love It</a></li>
+          </ul>
+        </div>
 
       </div>
     </div>
