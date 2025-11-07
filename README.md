@@ -1,15 +1,19 @@
-# Daylight
+# How much daylight does Daylight Savings Time save?
 
-How much daylight does Daylight Savings Time save?
+Try the tool at [dreeves.github.io](https://dreeves.github.io/daylight "I haven't thought of a cute name for this thing yet").
 
-## Development
+
+
+## In which Codebuff explains to you how to build and deploy this
+
+### Development
 
 ```bash
 npm install
 npm run dev
 ```
 
-## Building
+### Building
 
 ```bash
 npm run build
@@ -17,13 +21,13 @@ npm run build
 
 Static files will be in `dist/` folder.
 
-## GitHub Pages Deployment
+### GitHub Pages Deployment
 
 1. Push to GitHub
 2. Go to repo Settings → Pages → Source: GitHub Actions
 3. Every push to `main` auto-deploys to `https://[username].github.io/daylight`
 
-## Local Testing
+### Local Testing
 
 ```bash
 npm run build
@@ -35,7 +39,12 @@ Open http://localhost:8080
 
 ## Me coaxing Claude Sonnet 4.5 to make the initial version of this
 
-can you make a little tool that has slider for latitude and makes a graph with jan 1 to dec 31 on the x-axis and "dawn delta" on the y-axis, where dawn delta is defined like so: let w by the time of day of dawn on winter solstice for the given latitude. dawn delta for a given day of the year d is the difference, d-w.
+Following is pretty much the whole transcript (my side of it) of my dialog with Claude to get this into usable shape.
+Further work with Codebuff then ensued to get it usable at a stable URL, plus some additional improvements from Codebuff.
+According to TagTime, I've spent 11 hours and 15 minutes wrestling with LLMs to get this thing working.
+It started with the following not-entirely-coherent prompt and then down the rabbit hole I went...
+
+can you make a little tool that has a slider for latitude and makes a graph with jan 1 to dec 31 on the x-axis and "dawn delta" on the y-axis, where dawn delta is defined like so: let w be the time of day of dawn on winter solstice for the given latitude. dawn delta for a given day of the year d is the difference, d-w.
 
 _[version 1]_
 
@@ -411,19 +420,18 @@ there was a bit more teeth-pulling and then i ran the database by GPT-5 and Gemi
 it's probably not too far off now.
 
 
-## To gissue
+## Scratch Notes and things to maybe add gissues about
 
-can you add a y-axis label? "Delta from Summer Solstice's Sunrise (SSS)"
-
-link formatting
+BUG/RFE: link formatting
 
 BUG: if wake time is at zero and you check the DST checkbox, it should wrap to the top of the graph rather than increase the y-axis range to start at -1 instead +0. basically everything should be graphed mod 24.
 
-Codebuff falls on its face on this:
-can we deal with this warning, if it matters?
-cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation
+Codebuff falls on its face on this:  
+can we deal with this warning, if it matters?  
+> cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI...
 
-I see this in the browser console:
-You are calling ReactDOMClient.createRoot() on a container that has already been passed to createRoot() before. Instead, call root.render() on the existing root instead if you want to update it.
-
-Silly idea: Do this right by having the y-axis start at the Dawnzerly 
+Idea: Do this more exactly right by having the y-axis start at the Dawnzerly Light time, as Ramona Quimby would say. 
+I.e., make the baseline for the y-axis be the earliest crack of dawn of the year, which can be a fair bit earlier than Summer Solstice's Sunrise.
+To really go overboard, we could say that twilight and daybreak -- the time when it's quasi-light just before sunrise and just after sunset -- is partially wasted if slept through.
+We could either parameterize that with another slider or use the actual fractional luminescence or whatever.
+It's infinite fractal rabbit holes forever.
