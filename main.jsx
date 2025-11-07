@@ -592,7 +592,7 @@ const DawnDeltaTool = () => {
             type="range"
             min="1"
             max="365"
-            step="7"
+            step="1"
             value={dstStart}
             onChange={(e) => setDstStart(Number(e.target.value))}
             className={`w-full h-2 rounded-lg appearance-none cursor-pointer ${dstEnabled ? 'bg-yellow-200' : 'bg-gray-200 opacity-50'}`}
@@ -607,7 +607,7 @@ const DawnDeltaTool = () => {
             type="range"
             min="1"
             max="365"
-            step="7"
+            step="1"
             value={dstEnd}
             onChange={(e) => setDstEnd(Number(e.target.value))}
             className={`w-full h-2 rounded-lg appearance-none cursor-pointer ${dstEnabled ? 'bg-orange-200' : 'bg-gray-200 opacity-50'}`}
