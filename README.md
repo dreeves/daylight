@@ -1,6 +1,6 @@
 # How much daylight does Daylight Savings Time save?
 
-Try the tool at [dreeves.github.io](https://dreeves.github.io/daylight "I haven't thought of a cute name for this thing yet").
+Try the tool at [dreeves.github.io/daylight](https://dreeves.github.io/daylight "I haven't thought of a cute name for this thing yet").
 
 
 
