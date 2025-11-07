@@ -407,6 +407,8 @@ i modified the plan (i said "nom" not "name", for example). proceed.
 
 _[version 59]_
 
+there was a bit more teeth-pulling and then i ran the database by GPT-5 and Gemini, which found a few mistakes that i manually fixed.
+it's probably not too far off now.
 
 
 ## To gissue

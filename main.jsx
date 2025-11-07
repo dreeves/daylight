@@ -147,6 +147,20 @@ const DawnDeltaTool = () => {
     { nom: 'Wellington', lat: -41.29, lon: 174.78, pop: 415000, sss: 4.72, dst: true },
     { nom: 'Dunedin', lat: -45.87, lon: 170.50, pop: 130000, sss: 4.72, dst: true },
     { nom: 'Punta Arenas', lat: -53.16, lon: -70.92, pop: 130000, sss: 5.50, dst: true }, // maybe this one uses permanent DST?
+    // GPT-5 added these:
+    { nom: 'Guangzhou',    lat: 23.13,  lon: 113.26, pop: 32.6e6, sss: 5.69, dst: false },
+    { nom: 'Shenzhen',     lat: 22.55,  lon: 114.05, pop: 17.6e6, sss: 5.66, dst: false },
+    { nom: 'Hong Kong',    lat: 22.30,  lon: 114.20, pop: 7.5e6,  sss: 5.66, dst: false },
+    { nom: 'Tehran',       lat: 35.69,  lon: 51.39,  pop: 17.8e6, sss: 4.81, dst: false },
+    { nom: 'Dubai',        lat: 25.20,  lon: 55.27,  pop: 6.0e6,  sss: 5.48, dst: false },
+    { nom: 'Lisbon',       lat: 38.72,  lon: -9.13,  pop: 3.0e6,  sss: 5.19, dst: true  },
+    { nom: 'Barcelona',    lat: 41.38,  lon: 2.18,   pop: 5.7e6,  sss: 5.29, dst: true  },
+    { nom: 'Zurich',       lat: 47.37,  lon: 8.54,   pop: 2.1e6,  sss: 4.48, dst: true  },
+    { nom: 'Kuala Lumpur', lat: 3.15,   lon: 101.70, pop: 8.8e6,  sss: 7.09, dst: false },
+    { nom: 'Perth',        lat: -31.96, lon: 115.86, pop: 2.3e6,  sss: 5.12, dst: false },
+    { nom: 'Auckland',     lat: -36.85, lon: 174.77, pop: 1.8e6,  sss: 4.97, dst: true  },
+    { nom: 'Addis Ababa',  lat: 9.03,   lon: 38.74,  pop: 6.0e6,  sss: 6.11, dst: false },
+
   ];
 
   // Pre-compute hash map from rounded latitude to cities (computed once)
@@ -614,7 +628,7 @@ const DawnDeltaTool = () => {
 
       <div className="bg-white p-6 rounded-lg shadow">
         <ResponsiveContainer width="100%" height={500}>
-          <ComposedChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+          <ComposedChart data={data} margin={{ top: 5, right: 30, left: 19, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis 
               dataKey="day" 
@@ -624,6 +638,13 @@ const DawnDeltaTool = () => {
             <YAxis 
               domain={[0, 24]}
               tickFormatter={formatYAxis}
+              label={{ 
+                value: "Delta from Summer Solstice's Sunrise (SSS)", 
+                angle: -90, 
+                position: 'insideLeft',
+                style: { textAnchor: 'middle' },
+                offset: -13
+              }}
             />
             <Tooltip content={CustomTooltip} />
             <ReferenceLine y={0} stroke="#666" strokeDasharray="3 3" />
