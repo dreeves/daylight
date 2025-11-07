@@ -30,14 +30,14 @@ const DawnDeltaTool = () => {
   // Get locale names for start date
   const getLocalesForStartDate = useCallback((start) => {
     return dstLocales
-      .filter(loc => Math.abs(loc.start - start) <= 1)
+      .filter(loc => loc.start === start)
       .map(loc => loc.name);
   }, [dstLocales]);
 
   // Get locale names for end date
   const getLocalesForEndDate = useCallback((end) => {
     return dstLocales
-      .filter(loc => Math.abs(loc.end - end) <= 1)
+      .filter(loc => loc.end === end)
       .map(loc => loc.name);
   }, [dstLocales]);
 
