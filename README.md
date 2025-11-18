@@ -426,11 +426,11 @@ If wake time is at zero and you check the DST checkbox, it should wrap to the to
 Basically everything should be graphed mod 24.
 
 Codebuff falls on its face on this:  
-Can we deal with this warning, if it matters?  
+Can we deal with the following warning, if it matters?  
 > cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI...
 
 Idea: Do this more exactly correctly by having the y-axis start at the Dawnzerly Light time, as Ramona Quimby would say. 
 I.e., make the baseline for the y-axis be the earliest crack of dawn of the year, which can be a fair bit earlier than Summer Solstice's Sunrise.
-To really go overboard, we could say that twilight and daybreak -- the times when it's quasi-light just before sunrise and just after sunset -- is partially wasted if slept through.
+To really go overboard, we could say that twilight and daybreak -- the times when it's quasi-light before sunrise and after sunset -- is partially wasted if slept through.
 We could either parameterize that with another slider or use the actual fractional luminescence or whatever.
 Yes, it's infinite fractal rabbit holes forever.
